@@ -4,7 +4,7 @@ import { HiOutlineWrenchScrewdriver } from 'react-icons/hi2'
 const AboutWhy = () => (
   <section className="w-full bg-white py-14">
     <div className="max-w-6xl mx-auto px-6">
-      <h2 className="text-[1.4rem] font-bold text-[#1e3a5f] mb-6">Why UDSPak?</h2>
+      <h2 className="text-[1.4rem] font-bold text-[#1e3a5f] mb-6">Why udspak?</h2>
 
       {/* Row 1 */}
       <div className="flex gap-4 mb-4">
