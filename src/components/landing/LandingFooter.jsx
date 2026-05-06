@@ -4,9 +4,8 @@ const LandingFooter = () => (
 
       {/* Logo + copyright */}
       <div>
-        <div className="flex items-center gap-0 mb-1.5 select-none">
-          <span className="text-[#1e3a5f] font-bold text-xl tracking-tight">uds</span>
-          <span className="text-green-500 font-bold text-xl tracking-tight">pak</span>
+        <div className="mb-1.5">
+          <img src="/landinglogo.png" alt="UDSPak" className="h-8 w-auto" />
         </div>
         <p className="text-xs text-gray-400">
           © 2024 UDS PAK. Government Integrated &amp; SOC2 Compliant.

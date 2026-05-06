@@ -14,9 +14,8 @@ const Navbar = () => {
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-0 select-none">
-          <span className="text-[#1e3a5f] font-bold text-lg tracking-tight">uds</span>
-          <span className="text-green-500 font-bold text-lg tracking-tight">pak</span>
+        <Link to="/" className="flex items-center select-none">
+          <img src="/landinglogo.png" alt="UDSPak" className="h-8 w-auto" />
         </Link>
 
         {/* Center nav links */}
