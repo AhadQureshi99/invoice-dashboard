@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 
 const AboutCTA = () => (
-  <section className="w-full bg-[#1e3a5f] py-16">
+  <section className="w-full bg-[#07275a] py-16">
     <div className="max-w-6xl mx-auto px-6 text-center">
       <h2 className="text-white text-[1.6rem] font-bold">
         Ready to secure your compliance?
       </h2>
       <p className="mt-3 text-slate-300 text-sm max-w-md mx-auto leading-relaxed">
-        Join the institutions that trust TaxGuard for their mission-critical tax operations.
+        Join the institutions that trust UDSPak for their mission-critical tax operations.
       </p>
       <div className="mt-8 flex items-center justify-center gap-3">
         <Link

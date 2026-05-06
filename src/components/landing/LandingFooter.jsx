@@ -5,7 +5,7 @@ const LandingFooter = () => (
       {/* Logo + copyright */}
       <div>
         <div className="mb-1.5">
-          <img src="/landinglogo.png" alt="UDSPak" className="h-8 w-auto" />
+          <img src="/landinglogo.png" alt="UDSPak" className="h-12 w-auto" />
         </div>
         <p className="text-xs text-gray-400">
           © 2024 UDS PAK. Government Integrated &amp; SOC2 Compliant.

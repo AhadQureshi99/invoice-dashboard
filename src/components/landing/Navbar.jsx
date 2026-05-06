@@ -15,7 +15,7 @@ const Navbar = () => {
 
         {/* Logo */}
         <Link to="/" className="flex items-center select-none">
-          <img src="/landinglogo.png" alt="UDSPak" className="h-8 w-auto" />
+          <img src="/landinglogo.png" alt="UDSPak" className="h-12 w-auto" />
         </Link>
 
         {/* Center nav links */}
