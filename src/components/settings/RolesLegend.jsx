@@ -5,7 +5,7 @@ const roles = [
 ]
 
 const RolesLegend = () => (
-  <div className="grid grid-cols-3 gap-4">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
     {roles.map(({ title, color, desc }) => (
       <div key={title} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
         <p className={`text-lg font-black tracking-wide mb-2 ${color}`}>{title}</p>

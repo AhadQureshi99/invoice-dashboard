@@ -24,7 +24,7 @@ const tdClass = 'text-sm text-gray-600 py-3.5'
 const RecentActivity = () => (
   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     {/* Header */}
-    <div className="flex items-start justify-between px-6 pt-5 pb-1">
+    <div className="flex flex-wrap items-start justify-between gap-3 px-6 pt-5 pb-1">
       <div>
         <p className="text-sm font-bold text-[#1e3a5f]">Recent Activity</p>
         <p className="text-xs text-gray-400 mt-0.5">Recent Activity</p>

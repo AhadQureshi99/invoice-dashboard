@@ -9,7 +9,7 @@ const AboutCTA = () => (
       <p className="mt-3 text-slate-300 text-sm max-w-md mx-auto leading-relaxed">
         Join the institutions that trust UDSPak for their mission-critical tax operations.
       </p>
-      <div className="mt-8 flex items-center justify-center gap-3">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/register"
           className="bg-white hover:bg-gray-50 text-[#1e3a5f] text-sm font-semibold

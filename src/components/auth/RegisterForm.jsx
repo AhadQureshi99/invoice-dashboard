@@ -48,7 +48,7 @@ const RegisterForm = () => {
   }
 
   return (
-    <div className="w-[58%] bg-white px-10 py-9 flex flex-col justify-center overflow-y-auto">
+    <div className="w-full md:w-[58%] bg-white px-8 md:px-10 py-9 flex flex-col justify-center overflow-y-auto">
 
       {/* Heading */}
       <h2 className="text-[1.65rem] font-bold text-gray-900 leading-tight">Create New Account</h2>

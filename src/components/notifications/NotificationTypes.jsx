@@ -5,7 +5,7 @@ const types = [
 ]
 
 const NotificationTypes = () => (
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 w-40 flex-shrink-0">
+  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:w-40 flex-shrink-0">
     <p className="text-[10px] font-black text-[#1e3a5f] tracking-widest uppercase mb-4">Types</p>
     <div className="flex flex-col gap-3">
       {types.map(({ label, count }) => (

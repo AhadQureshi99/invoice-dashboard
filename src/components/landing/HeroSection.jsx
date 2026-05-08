@@ -82,7 +82,7 @@ const DashboardMockup = () => (
 )
 
 const HeroSection = () => (
-  <section className="max-w-6xl mx-auto px-6 pt-16 pb-10 flex items-center gap-12">
+  <section className="max-w-6xl mx-auto px-6 pt-12 pb-10 flex flex-col md:flex-row items-center gap-10 md:gap-12">
     {/* Left */}
     <div className="flex-1 min-w-0">
       <h1 className="text-[2.1rem] font-bold text-[#1e3a5f] leading-[1.2] max-w-sm">
@@ -92,7 +92,7 @@ const HeroSection = () => (
         The official gateway for FBR invoice management, verification, and automated
         reporting. Built for institutional trust and seamless government integration.
       </p>
-      <div className="mt-8 flex items-center gap-3">
+      <div className="mt-8 flex flex-wrap items-center gap-3">
         <Link
           to="/register"
           className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-sm font-semibold

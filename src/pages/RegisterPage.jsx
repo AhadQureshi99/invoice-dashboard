@@ -5,7 +5,9 @@ const RegisterPage = () => (
     {/* Main card */}
     <div className="flex-1 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-[980px] flex rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-        <RegisterLeftPanel />
+        <div className="hidden md:flex">
+          <RegisterLeftPanel />
+        </div>
         <RegisterForm />
       </div>
     </div>
@@ -19,3 +21,4 @@ const RegisterPage = () => (
 )
 
 export default RegisterPage
+

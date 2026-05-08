@@ -1,6 +1,6 @@
 const AboutStory = () => (
   <section className="w-full bg-white py-16">
-    <div className="max-w-6xl mx-auto px-6 flex items-center gap-14">
+    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10 md:gap-14">
 
       {/* Left — text */}
       <div className="flex-1 min-w-0">

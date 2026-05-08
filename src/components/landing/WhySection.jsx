@@ -21,7 +21,7 @@ const FeatureTile = ({ icon: Icon, label }) => (
 
 const WhySection = () => (
   <section className="w-full bg-[#0f2040] py-16">
-    <div className="max-w-6xl mx-auto px-6 flex items-center gap-16">
+    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
 
       {/* Left */}
       <div className="flex-1 min-w-0">

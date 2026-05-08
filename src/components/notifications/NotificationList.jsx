@@ -144,7 +144,7 @@ const NotificationList = () => {
             </div>
 
             {/* Right side */}
-            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <div className="hidden sm:flex flex-col items-end gap-1.5 flex-shrink-0">
               <span className="text-[10px] font-semibold text-gray-400 tracking-wide whitespace-nowrap">{time}</span>
               {badge && badge}
             </div>

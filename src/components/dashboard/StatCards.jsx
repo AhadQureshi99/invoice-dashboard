@@ -59,24 +59,26 @@ const stats = [
 ]
 
 const StatCard = ({ id, label, value, change, changeColor, sparkColor, linePath, areaExtra }) => (
-  <div className="flex-1 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-    <div className="flex items-start justify-between gap-3">
+  <div className="flex-1 bg-white rounded-2xl p-4 border border-gray-100 shadow-sm min-w-0">
+    <div className="flex items-start justify-between gap-2">
       {/* Left */}
-      <div>
-        <p className="text-xs font-medium text-gray-400 mb-2">{label}</p>
-        <p className="text-[1.85rem] font-bold text-[#1e3a5f] leading-none">{value}</p>
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-gray-400 mb-2 truncate">{label}</p>
+        <p className="text-2xl font-bold text-[#1e3a5f] leading-none">{value}</p>
       </div>
       {/* Right */}
       <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-        <span className={`text-sm font-semibold ${changeColor}`}>{change}</span>
-        <Sparkline id={id} linePath={linePath} areaExtra={areaExtra} color={sparkColor} />
+        <span className={`text-xs font-semibold ${changeColor}`}>{change}</span>
+        <div className="hidden sm:block">
+          <Sparkline id={id} linePath={linePath} areaExtra={areaExtra} color={sparkColor} />
+        </div>
       </div>
     </div>
   </div>
 )
 
 const StatCards = () => (
-  <div className="flex gap-4">
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
     {stats.map((s) => <StatCard key={s.id} {...s} />)}
   </div>
 )

@@ -53,23 +53,17 @@ const stats = [
 ]
 
 const VerificationStats = () => (
-  <div className="grid grid-cols-4 gap-4">
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
     {stats.map(({ icon: Icon, value, label, change }) => (
-      <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+      <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-2 min-w-0">
         <div className="flex-shrink-0">
           <Icon />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-xl font-bold text-gray-900 leading-tight">{value}</p>
-            <span className="flex items-center gap-0.5 text-[11px] font-semibold text-green-500 whitespace-nowrap mt-0.5">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path d="M5 1l4 4H1l4-4z" fill="currentColor"/>
-              </svg>
-              {change}
-            </span>
+          <div className="flex flex-col gap-0.5">
+            <p className="text-lg font-bold text-gray-900 leading-tight">{value}</p>
+            <p className="text-[10px] text-gray-400 font-medium leading-tight truncate">{label}</p>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{label}</p>
         </div>
       </div>
     ))}

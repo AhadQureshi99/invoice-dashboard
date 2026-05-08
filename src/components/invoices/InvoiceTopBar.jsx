@@ -1,5 +1,5 @@
 const InvoiceTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 flex items-center gap-4">
+  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
     <span className="text-sm font-bold text-[#1e3a5f]">Invoice Upload &amp; Validation</span>
 
     <button className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-xs font-semibold

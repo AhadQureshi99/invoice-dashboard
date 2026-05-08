@@ -35,7 +35,7 @@ const stats = [
 ]
 
 const NotificationStats = () => (
-  <div className="grid grid-cols-3 gap-4">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
     {stats.map(({ icon, value, label }, i) => (
       <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
         <div className="flex-shrink-0">{icon}</div>

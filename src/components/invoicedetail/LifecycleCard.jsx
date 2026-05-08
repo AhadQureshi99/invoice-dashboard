@@ -34,7 +34,8 @@ const LifecycleCard = () => (
     <p className="text-xs font-black text-[#1e3a5f] tracking-widest uppercase mb-6">Invoice Lifecycle</p>
 
     {/* Progress rail */}
-    <div className="relative flex items-start gap-0">
+    <div className="overflow-x-auto -mx-2 px-2">
+    <div className="relative flex items-start gap-0 min-w-[480px]">
       {steps.map((step, i) => (
         <div key={i} className="flex-1 flex flex-col items-start relative">
 
@@ -66,6 +67,7 @@ const LifecycleCard = () => (
           <p className="text-[10px] text-gray-400 mt-1 pr-2 leading-relaxed">{step.note}</p>
         </div>
       ))}
+    </div>
     </div>
   </div>
 )

@@ -1,23 +1,19 @@
 import { HiOutlineFilter, HiOutlinePlusCircle } from 'react-icons/hi'
-import Sidebar          from '../components/dashboard/Sidebar'
+import DashboardLayout  from '../components/dashboard/DashboardLayout'
 import DraftTopBar      from '../components/draft/DraftTopBar'
 import DraftTable       from '../components/draft/DraftTable'
 import NewQuickDraft    from '../components/draft/NewQuickDraft'
 import DraftBottomCards from '../components/draft/DraftBottomCards'
 
 const DraftPage = () => (
-  <div className="flex h-screen bg-[#f0f4f8] overflow-hidden">
-
-    <Sidebar />
-
-    <div className="flex-1 flex flex-col min-w-0">
+  <DashboardLayout>
       <DraftTopBar />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+      <main className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5">
 
           {/* Page title row */}
-          <div className="flex items-start justify-between">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-[#1e3a5f] leading-tight">Draft Invoices</h1>
               <p className="text-xs text-gray-400 mt-1">Manage and complete your pending tax filings.</p>
@@ -35,7 +31,7 @@ const DraftPage = () => (
           </div>
 
           {/* Main content: table + quick draft form */}
-          <div className="flex gap-5 items-start">
+          <div className="flex flex-col lg:flex-row gap-5 items-start">
             <div className="flex-[1.6] min-w-0">
               <DraftTable />
             </div>
@@ -56,8 +52,8 @@ const DraftPage = () => (
 
         </div>
       </main>
-    </div>
-  </div>
+  </DashboardLayout>
 )
 
 export default DraftPage
+

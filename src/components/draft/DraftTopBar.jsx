@@ -1,7 +1,7 @@
 import { HiOutlineRefresh } from 'react-icons/hi'
 
 const DraftTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 flex items-center gap-4">
+  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
 
     <div className="flex items-center gap-3">
       <span className="text-sm font-bold text-[#1e3a5f]">Verification Center</span>

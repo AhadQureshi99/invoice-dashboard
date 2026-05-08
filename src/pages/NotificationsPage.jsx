@@ -1,11 +1,11 @@
-import Sidebar              from '../components/dashboard/Sidebar'
+import DashboardLayout from '../components/dashboard/DashboardLayout'
 import NotificationStats    from '../components/notifications/NotificationStats'
 import NotificationTypes    from '../components/notifications/NotificationTypes'
 import NotificationList     from '../components/notifications/NotificationList'
 import { HiOutlineCheckCircle, HiViewGrid } from 'react-icons/hi'
 
 const NotifTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 flex items-center gap-4">
+  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
     <span className="text-sm font-bold text-[#1e3a5f]">FBR Invoice Manager</span>
     <div className="relative flex-1 max-w-xs">
       <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2">
@@ -39,14 +39,10 @@ const NotifTopBar = () => (
 )
 
 const NotificationsPage = () => (
-  <div className="flex h-screen bg-[#f0f4f8] overflow-hidden">
-
-    <Sidebar />
-
-    <div className="flex-1 flex flex-col min-w-0">
+  <DashboardLayout>
       <NotifTopBar />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+      <main className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5">
 
           {/* Page header */}
@@ -73,7 +69,7 @@ const NotificationsPage = () => (
           <NotificationStats />
 
           {/* Types sidebar + List */}
-          <div className="flex gap-4 items-stretch">
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch">
             <NotificationTypes />
             <NotificationList />
           </div>
@@ -87,7 +83,6 @@ const NotificationsPage = () => (
 
         </div>
       </main>
-    </div>
 
     {/* Floating action button */}
     <button className="fixed bottom-6 right-6 w-12 h-12 bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-2xl
@@ -95,7 +90,8 @@ const NotificationsPage = () => (
       +
     </button>
 
-  </div>
+  </DashboardLayout>
 )
 
 export default NotificationsPage
+

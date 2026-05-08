@@ -31,7 +31,7 @@ const GlobalStandards = () => (
         </p>
       </div>
 
-      <div className="flex gap-5">
+      <div className="flex flex-col sm:flex-row gap-5">
         {standards.map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex-1 bg-white border border-gray-200 rounded-2xl p-6">
             <div className="w-10 h-10 rounded-xl bg-[#1e3a5f] flex items-center justify-center mb-5">

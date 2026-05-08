@@ -1,4 +1,4 @@
-import Sidebar              from '../components/dashboard/Sidebar'
+import DashboardLayout from '../components/dashboard/DashboardLayout'
 import VerificationTopBar  from '../components/verification/VerificationTopBar'
 import VerificationForm    from '../components/verification/VerificationForm'
 import VerificationSidecards from '../components/verification/VerificationSidecards'
@@ -6,14 +6,10 @@ import VerificationHistory from '../components/verification/VerificationHistory'
 import VerificationStats   from '../components/verification/VerificationStats'
 
 const VerificationPage = () => (
-  <div className="flex h-screen bg-[#f0f4f8] overflow-hidden">
-
-    <Sidebar />
-
-    <div className="flex-1 flex flex-col min-w-0">
+  <DashboardLayout>
       <VerificationTopBar />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+      <main className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5">
 
           {/* Page title */}
@@ -23,7 +19,7 @@ const VerificationPage = () => (
           </div>
 
           {/* Form + Sidecards */}
-          <div className="flex gap-5 items-stretch">
+          <div className="flex flex-col lg:flex-row gap-5 items-stretch">
             <VerificationForm />
             <VerificationSidecards />
           </div>
@@ -43,8 +39,8 @@ const VerificationPage = () => (
 
         </div>
       </main>
-    </div>
-  </div>
+  </DashboardLayout>
 )
 
 export default VerificationPage
+

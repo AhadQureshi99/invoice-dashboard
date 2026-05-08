@@ -42,7 +42,7 @@ const LoginForm = () => {
   }
 
   return (
-    <div className="w-[58%] bg-white px-10 py-11 flex flex-col justify-center">
+    <div className="w-full md:w-[58%] bg-white px-8 md:px-10 py-10 md:py-11 flex flex-col justify-center">
 
       {/* Heading */}
       <h2 className="text-[1.65rem] font-bold text-gray-900 leading-tight">Login</h2>

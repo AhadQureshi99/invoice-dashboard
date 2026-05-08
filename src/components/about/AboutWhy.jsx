@@ -7,7 +7,7 @@ const AboutWhy = () => (
       <h2 className="text-[1.4rem] font-bold text-[#07275a] mb-6">Why UDSPak?</h2>
 
       {/* Row 1 */}
-      <div className="flex gap-4 mb-4">
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
 
         {/* Institutional Heritage — large left */}
         <div className="flex-[2] border border-gray-200 rounded-2xl p-6 flex flex-col gap-3 overflow-hidden">
@@ -52,7 +52,7 @@ const AboutWhy = () => (
       </div>
 
       {/* Row 2 */}
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
 
         {/* Security First */}
         <div className="flex-1 border border-gray-200 rounded-2xl p-6">
@@ -67,7 +67,7 @@ const AboutWhy = () => (
         </div>
 
         {/* SOC2 Type II */}
-        <div className="flex-[2] border border-gray-200 rounded-2xl p-6 flex items-start justify-between gap-6">
+        <div className="flex-[2] border border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row items-start justify-between gap-6">
           <div className="flex-1">
             <h3 className="text-[#07275a] font-bold text-[0.95rem] mb-2">SOC2 Type II Certified</h3>
             <p className="text-gray-500 text-sm leading-relaxed">

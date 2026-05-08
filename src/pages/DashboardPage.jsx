@@ -1,4 +1,4 @@
-import Sidebar        from '../components/dashboard/Sidebar'
+import DashboardLayout from '../components/dashboard/DashboardLayout'
 import TopBar         from '../components/dashboard/TopBar'
 import StatCards      from '../components/dashboard/StatCards'
 import InvoiceChart   from '../components/dashboard/InvoiceChart'
@@ -7,15 +7,10 @@ import SystemSecurity from '../components/dashboard/SystemSecurity'
 import RecentActivity from '../components/dashboard/RecentActivity'
 
 const DashboardPage = () => (
-  <div className="flex h-screen bg-[#f0f4f8] overflow-hidden">
-
-    <Sidebar />
-
-    {/* Main */}
-    <div className="flex-1 flex flex-col min-w-0">
+  <DashboardLayout>
       <TopBar />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+      <main className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5">
 
         {/* Page title */}
@@ -32,7 +27,7 @@ const DashboardPage = () => (
         <StatCards />
 
         {/* Chart + Right panel */}
-        <div className="flex gap-5 items-start">
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
           <div className="flex-[1.75] min-w-0">
             <InvoiceChart />
           </div>
@@ -42,7 +37,7 @@ const DashboardPage = () => (
           </div>
         </div>
 
-        {/* Recent activity */}
+        {/* Recent activity */}}
         <RecentActivity />
 
         {/* Footer */}
@@ -53,8 +48,8 @@ const DashboardPage = () => (
         </p>
         </div>{/* end flex col gap-5 */}
       </main>
-    </div>
-  </div>
+  </DashboardLayout>
 )
 
 export default DashboardPage
+

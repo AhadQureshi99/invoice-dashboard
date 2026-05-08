@@ -48,12 +48,12 @@ const InvoiceChart = () => (
   <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
 
     {/* Header */}
-    <div className="flex items-start justify-between mb-1">
+    <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
       <div>
         <p className="text-sm font-bold text-[#1e3a5f]">Monthly Invoice Trend</p>
         <p className="text-xs text-gray-400 mt-0.5">Processing Volume for H2 2023</p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <button className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5
                            text-xs text-gray-600 hover:bg-gray-50 transition-colors">
           <HiOutlineTable className="w-3.5 h-3.5" />
@@ -66,8 +66,9 @@ const InvoiceChart = () => (
       </div>
     </div>
 
-    {/* SVG Chart */}
-    <svg viewBox="0 0 530 195" className="w-full" style={{ height: 220 }}>
+    {/* SVG Chart — scrollable on very small screens */}
+    <div className="overflow-x-auto -mx-1">
+    <svg viewBox="0 0 530 195" className="w-full min-w-[320px]" style={{ height: 220 }}>
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="#6366f1" stopOpacity="0.22" />
@@ -124,6 +125,7 @@ const InvoiceChart = () => (
       <circle cx={215} cy={74} r="4" fill="#6366f1" />
       <circle cx={215} cy={74} r="7" fill="#6366f1" fillOpacity="0.18" />
     </svg>
+    </div>
   </div>
 )
 

@@ -34,7 +34,7 @@ const InvoiceInfoCard = () => (
     </div>
 
     {/* Issuer / Recipient */}
-    <div className="grid grid-cols-2 gap-6 border-t border-gray-100 pt-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gray-100 pt-5">
       {/* Issuer */}
       <div>
         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Issuer Information</p>

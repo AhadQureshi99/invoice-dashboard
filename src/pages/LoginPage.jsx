@@ -5,7 +5,9 @@ const LoginPage = () => (
     {/* Main card — vertically + horizontally centered */}
     <div className="flex-1 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-[980px] flex rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-        <LeftPanel />
+        <div className="hidden md:flex">
+          <LeftPanel />
+        </div>
         <LoginForm />
       </div>
     </div>
@@ -16,3 +18,4 @@ const LoginPage = () => (
 )
 
 export default LoginPage
+

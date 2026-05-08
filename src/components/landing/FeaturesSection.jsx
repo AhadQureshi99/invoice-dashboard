@@ -38,7 +38,7 @@ const FeaturesSection = () => (
           High-density compliance tools for large scale operations.
         </p>
       </div>
-      <div className="flex gap-6">
+      <div className="flex flex-col sm:flex-row gap-6">
         {features.map((f) => (
           <FeatureCard key={f.title} {...f} />
         ))}

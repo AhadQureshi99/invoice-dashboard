@@ -20,7 +20,7 @@ const NewQuickDraft = () => (
     </div>
 
     {/* Seller / Buyer NTN */}
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN</label>
         <input type="text" defaultValue="23444-8023" className={inputClass} />
@@ -42,7 +42,7 @@ const NewQuickDraft = () => (
     </div>
 
     {/* QTY / Unit Price */}
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label className="block text-xs font-semibold text-gray-700 mb-1.5">QTY</label>
         <input type="text" defaultValue="1" className={inputClass} />

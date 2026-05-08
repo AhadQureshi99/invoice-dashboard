@@ -9,7 +9,7 @@ const CTASection = () => (
       <p className="mt-3 text-gray-500 text-sm max-w-md mx-auto">
         Join over 1,200 enterprises using TaxGuard to manage their FBR compliance effortlessly.
       </p>
-      <div className="mt-8 flex items-center justify-center gap-3">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/register"
           className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-sm font-semibold

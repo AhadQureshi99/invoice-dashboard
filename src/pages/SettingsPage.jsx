@@ -1,5 +1,5 @@
 import { HiOutlineRefresh, HiOutlinePlusCircle } from 'react-icons/hi'
-import Sidebar         from '../components/dashboard/Sidebar'
+import DashboardLayout from '../components/dashboard/DashboardLayout'
 import InvoiceTopBar   from '../components/invoices/InvoiceTopBar'
 import ProfileDetails  from '../components/settings/ProfileDetails'
 import SecurityAccess  from '../components/settings/SecurityAccess'
@@ -8,7 +8,7 @@ import TeamManagement  from '../components/settings/TeamManagement'
 import RolesLegend     from '../components/settings/RolesLegend'
 
 const SettingsTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 flex items-center gap-4">
+  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
     <span className="text-sm font-bold text-[#1e3a5f]">FBR Invoice Manager</span>
     <span className="text-gray-300 text-sm">|</span>
     <span className="text-sm text-gray-500">Security &amp; Roles</span>
@@ -34,18 +34,14 @@ const SettingsTopBar = () => (
 )
 
 const SettingsPage = () => (
-  <div className="flex h-screen bg-[#f0f4f8] overflow-hidden">
-
-    <Sidebar />
-
-    <div className="flex-1 flex flex-col min-w-0">
+  <DashboardLayout>
       <SettingsTopBar />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+      <main className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5">
 
           {/* Page title */}
-          <div className="flex items-start justify-between">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-[#1e3a5f] leading-tight">Account &amp; Team Governance</h1>
               <p className="text-xs text-gray-400 mt-1">Manage organizational access controls and individual profile compliance.</p>
@@ -65,7 +61,7 @@ const SettingsPage = () => (
           </div>
 
           {/* Profile + Security + Privacy row */}
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <ProfileDetails />
             <SecurityAccess />
             <PrivacyGuard />
@@ -86,8 +82,8 @@ const SettingsPage = () => (
 
         </div>
       </main>
-    </div>
-  </div>
+  </DashboardLayout>
 )
 
 export default SettingsPage
+
