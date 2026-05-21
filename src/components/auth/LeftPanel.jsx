@@ -12,7 +12,7 @@ const DecorativeRings = () => (
 )
 
 const StatusCard = () => (
-  <div className="relative z-10 bg-[#0f2040] rounded-xl p-4">
+  <div className="relative z-10 bg-[#083f33] rounded-xl p-4">
     <div className="flex items-center gap-3 mb-2.5">
       <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
         <HiShieldCheck className="text-green-500 w-[18px] h-[18px]" />

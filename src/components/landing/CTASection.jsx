@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const CTASection = () => (
   <section className="w-full bg-white py-20">
     <div className="max-w-6xl mx-auto px-6 text-center">
-      <h2 className="text-[1.6rem] font-bold text-[#1e3a5f]">
+      <h2 className="text-[1.6rem] font-bold text-[#0e5f4f]">
         Start your compliant journey today.
       </h2>
       <p className="mt-3 text-gray-500 text-sm max-w-md mx-auto">
@@ -12,7 +12,7 @@ const CTASection = () => (
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/register"
-          className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-sm font-semibold
+          className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-sm font-semibold
                      px-6 py-2.5 rounded-lg transition-colors"
         >
           Get Started Now

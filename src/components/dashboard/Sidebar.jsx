@@ -51,11 +51,11 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-[220px] bg-[#1e3a5f] flex flex-col flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
+    <aside className="w-[220px] bg-[#0e5f4f] flex flex-col flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
 
       <div className="px-5 pt-5 pb-4">
         <div className="bg-white rounded-xl px-3.5 py-2 inline-flex items-center select-none">
-          <span className="text-[#1e3a5f] font-bold text-base tracking-tight">uds</span>
+          <span className="text-[#0e5f4f] font-bold text-base tracking-tight">uds</span>
           <span className="text-green-500 font-bold text-base tracking-tight">pak</span>
         </div>
       </div>

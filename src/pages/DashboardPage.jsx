@@ -15,7 +15,7 @@ const DashboardPage = () => (
 
         {/* Page title */}
         <div>
-          <h1 className="text-[1.5rem] font-bold text-[#1e3a5f] leading-tight">
+          <h1 className="text-[1.5rem] font-bold text-[#0e5f4f] leading-tight">
             Operational Overview
           </h1>
           <p className="text-xs text-gray-400 mt-1">
@@ -42,7 +42,7 @@ const DashboardPage = () => (
 
         {/* Footer */}
         <p className="text-center text-[11px] text-gray-400 pb-2">
-          © 2026{' '}
+          Â© 2026{' '}
           <a href="/" className="text-blue-500 hover:underline">Name</a>
           {' '}All rights reserved.
         </p>

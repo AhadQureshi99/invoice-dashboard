@@ -9,7 +9,7 @@ const Row = ({ label, value, onChange, editing }) => (
       <input
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20"
+        className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20"
       />
     ) : (
       <div className="border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 bg-[#fafbfc]">
@@ -45,13 +45,13 @@ const ProfileDetails = () => {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-[#1e3a5f]">Profile Details</p>
+        <p className="text-sm font-bold text-[#0e5f4f]">Profile Details</p>
         {editing ? (
           <div className="flex items-center gap-2">
             <button onClick={() => setEditing(false)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">
               Cancel
             </button>
-            <button onClick={save} disabled={busy} className="bg-[#1e3a5f] text-white rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-[#0f2040] disabled:opacity-60">
+            <button onClick={save} disabled={busy} className="bg-[#0e5f4f] text-white rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-[#083f33] disabled:opacity-60">
               {busy ? 'Saving…' : 'Save'}
             </button>
           </div>

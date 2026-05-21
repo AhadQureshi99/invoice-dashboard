@@ -66,7 +66,7 @@ const DraftBottomCards = ({ refreshKey = 0 }) => {
         </div>
       </div>
 
-      <div className="relative bg-[#1e3a5f] rounded-2xl p-5 overflow-hidden">
+      <div className="relative bg-[#0e5f4f] rounded-2xl p-5 overflow-hidden">
         <ComplianceDecor />
         <p className="text-sm font-bold text-white mb-1.5 relative z-10">Compliance Check</p>
         <p className="text-[11px] text-slate-300 leading-relaxed mb-4 relative z-10">

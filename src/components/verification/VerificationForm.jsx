@@ -33,7 +33,7 @@ const Field = ({ label, value, onChange, type = 'text', placeholder = '' }) => (
     <label className="block text-xs font-semibold text-gray-700 mb-1.5">{label}</label>
     <input
       type={type} value={value} onChange={onChange} placeholder={placeholder}
-      className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder:text-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
+      className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder:text-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors"
     />
   </div>
 )
@@ -132,7 +132,7 @@ const VerificationForm = ({ onResult }) => {
             key={key}
             onClick={() => setTab(key)}
             className={`pb-3 text-sm font-semibold transition-colors ${
-              tab === key ? 'text-[#1e3a5f] border-b-2 border-[#1e3a5f]' : 'text-gray-400 hover:text-gray-600'
+              tab === key ? 'text-[#0e5f4f] border-b-2 border-[#0e5f4f]' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             {label}
@@ -182,7 +182,7 @@ const VerificationForm = ({ onResult }) => {
               <button onClick={handleClear} disabled={busy} className="border border-gray-300 rounded-lg px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60">
                 Clear Form
               </button>
-              <button onClick={handleVerify} disabled={busy} className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-lg px-7 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60">
+              <button onClick={handleVerify} disabled={busy} className="bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-7 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60">
                 {busy ? 'Verifying…' : 'Verify Now'}
               </button>
             </div>
@@ -194,7 +194,7 @@ const VerificationForm = ({ onResult }) => {
             onClick={() => ref.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleBulkFile(f) }}
-            className="border-2 border-dashed border-gray-200 rounded-xl bg-[#fafbfc] hover:border-[#1e3a5f]/40 flex flex-col items-center justify-center py-12 cursor-pointer"
+            className="border-2 border-dashed border-gray-200 rounded-xl bg-[#fafbfc] hover:border-[#0e5f4f]/40 flex flex-col items-center justify-center py-12 cursor-pointer"
           >
             <HiOutlineCloudUpload className="w-9 h-9 text-gray-300 mb-3" />
             <p className="text-sm font-semibold text-gray-700">Click or drop a CSV here</p>
@@ -210,7 +210,7 @@ const VerificationForm = ({ onResult }) => {
                 <span className="text-xs text-gray-500">{bulk.done}/{bulk.total} · {bulk.errors} errors</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#1e3a5f] h-1.5 rounded-full transition-all" style={{ width: `${(bulk.done / bulk.total) * 100}%` }} />
+                <div className="bg-[#0e5f4f] h-1.5 rounded-full transition-all" style={{ width: `${(bulk.done / bulk.total) * 100}%` }} />
               </div>
             </div>
           )}

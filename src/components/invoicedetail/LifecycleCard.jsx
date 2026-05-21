@@ -59,7 +59,7 @@ const LifecycleCard = () => {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-      <p className="text-xs font-black text-[#1e3a5f] tracking-widest uppercase mb-6">Invoice Lifecycle</p>
+      <p className="text-xs font-black text-[#0e5f4f] tracking-widest uppercase mb-6">Invoice Lifecycle</p>
 
       <div className="overflow-x-auto -mx-2 px-2">
         <div className="relative flex items-start gap-0 min-w-[480px]">
@@ -67,11 +67,11 @@ const LifecycleCard = () => {
           {steps.map((step, i) => (
             <div key={i} className="flex-1 flex flex-col items-start relative">
               {i < steps.length - 1 && (
-                <div className={`absolute top-[9px] left-1/2 w-full h-0.5 z-0 ${step.done ? 'bg-[#1e3a5f]' : 'bg-gray-200'}`} style={{ left: '50%' }} />
+                <div className={`absolute top-[9px] left-1/2 w-full h-0.5 z-0 ${step.done ? 'bg-[#0e5f4f]' : 'bg-gray-200'}`} style={{ left: '50%' }} />
               )}
               <div className="relative z-10 mb-3">
                 {step.done ? (
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${step.active ? 'bg-[#1e3a5f]' : 'bg-green-500'}`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${step.active ? 'bg-[#0e5f4f]' : 'bg-green-500'}`}>
                     {step.active
                       ? <span className="w-2 h-2 rounded-full bg-white" />
                       : <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5"/></svg>}

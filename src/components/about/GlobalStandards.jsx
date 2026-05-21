@@ -22,7 +22,7 @@ const GlobalStandards = () => (
   <section className="w-full bg-[#f0f2f5] py-16">
     <div className="max-w-6xl mx-auto px-6">
       <div className="text-center mb-10">
-        <h2 className="text-[1.5rem] font-bold text-[#1e3a5f]">
+        <h2 className="text-[1.5rem] font-bold text-[#0e5f4f]">
           Global Standards, Local Compliance
         </h2>
         <p className="mt-3 text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
@@ -34,10 +34,10 @@ const GlobalStandards = () => (
       <div className="flex flex-col sm:flex-row gap-5">
         {standards.map(({ icon: Icon, title, desc }) => (
           <div key={title} className="flex-1 bg-white border border-gray-200 rounded-2xl p-6">
-            <div className="w-10 h-10 rounded-xl bg-[#1e3a5f] flex items-center justify-center mb-5">
+            <div className="w-10 h-10 rounded-xl bg-[#0e5f4f] flex items-center justify-center mb-5">
               <Icon className="w-5 h-5 text-white" />
             </div>
-            <h3 className="text-[#1e3a5f] font-bold text-[0.95rem] mb-2">{title}</h3>
+            <h3 className="text-[#0e5f4f] font-bold text-[0.95rem] mb-2">{title}</h3>
             <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
           </div>
         ))}

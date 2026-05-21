@@ -69,7 +69,7 @@ const NotificationList = ({ categories = [] }) => {
               onClick={() => setActiveTab(t.key)}
               className={`text-xs font-semibold pb-3 border-b-2 transition-colors ${
                 activeTab === t.key
-                  ? 'border-[#1e3a5f] text-[#1e3a5f]'
+                  ? 'border-[#0e5f4f] text-[#0e5f4f]'
                   : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}
             >
@@ -90,7 +90,7 @@ const NotificationList = ({ categories = [] }) => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search alerts..."
             className="pl-8 pr-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-600 w-48
-                       focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 placeholder:text-gray-300"
+                       focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 placeholder:text-gray-300"
           />
         </div>
       </div>

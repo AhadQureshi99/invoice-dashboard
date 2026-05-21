@@ -69,7 +69,7 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
 
       <div className="flex items-start justify-between px-6 pt-5 pb-1">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Verification History</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Verification History</p>
           <p className="text-xs text-gray-400 mt-0.5">Overview of recent status checks and verification results.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
                 <td className={tdClass}>
                   <button
                     onClick={() => alert(JSON.stringify(row.response_payload, null, 2))}
-                    className="text-xs font-medium text-gray-500 hover:text-[#1e3a5f] transition-colors"
+                    className="text-xs font-medium text-gray-500 hover:text-[#0e5f4f] transition-colors"
                   >
                     View Log
                   </button>
@@ -127,7 +127,7 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
             key={n}
             onClick={() => setPage(n)}
             className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium transition-colors ${
-              n === page ? 'bg-[#1e3a5f] text-white' : 'text-gray-500 hover:bg-gray-100'
+              n === page ? 'bg-[#0e5f4f] text-white' : 'text-gray-500 hover:bg-gray-100'
             }`}
           >
             {n}

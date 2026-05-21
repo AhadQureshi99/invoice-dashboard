@@ -4,7 +4,7 @@ import { HiOutlineWrenchScrewdriver } from 'react-icons/hi2'
 const AboutWhy = () => (
   <section className="w-full bg-white py-14">
     <div className="max-w-6xl mx-auto px-6">
-      <h2 className="text-[1.4rem] font-bold text-[#07275a] mb-6">Why UDSPak?</h2>
+      <h2 className="text-[1.4rem] font-bold text-[#072720] mb-6">Why UDSPak?</h2>
 
       {/* Row 1 */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -14,7 +14,7 @@ const AboutWhy = () => (
           <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
             <HiOutlineOfficeBuilding className="w-5 h-5 text-gray-500" />
           </div>
-          <h3 className="text-[#07275a] font-bold text-[0.95rem]">Institutional Heritage</h3>
+          <h3 className="text-[#072720] font-bold text-[0.95rem]">Institutional Heritage</h3>
           <p className="text-gray-500 text-sm leading-relaxed">
             Born from decades of expertise in fiscal policy and regulatory frameworks, our
             platform is built by veterans of the tax industry who understand the gravity of
@@ -31,9 +31,9 @@ const AboutWhy = () => (
         </div>
 
         {/* Technical Precision — dark right */}
-        <div className="flex-1 bg-[#07275a] rounded-2xl p-6 flex flex-col">
+        <div className="flex-1 bg-[#072720] rounded-2xl p-6 flex flex-col">
           <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center mb-3">
-            <HiOutlineWrenchScrewdriver className="w-5 h-5" style={{ color: '#9eef9a' }} />
+            <HiOutlineWrenchScrewdriver className="w-5 h-5" style={{ color: '#7ed5b5' }} />
           </div>
           <h3 className="text-white font-bold text-[0.95rem] mb-2">Technical Precision</h3>
           <p className="text-slate-400 text-sm leading-relaxed">
@@ -46,7 +46,7 @@ const AboutWhy = () => (
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-500">
               Uptime Guarantee
             </span>
-            <span className="font-bold text-sm" style={{ color: '#9eef9a' }}>99.98%</span>
+            <span className="font-bold text-sm" style={{ color: '#7ed5b5' }}>99.98%</span>
           </div>
         </div>
       </div>
@@ -59,7 +59,7 @@ const AboutWhy = () => (
           <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center mb-3">
             <HiOutlineShieldCheck className="w-5 h-5 text-gray-500" />
           </div>
-          <h3 className="text-[#07275a] font-bold text-[0.95rem] mb-2">Security First</h3>
+          <h3 className="text-[#072720] font-bold text-[0.95rem] mb-2">Security First</h3>
           <p className="text-gray-500 text-sm leading-relaxed">
             Zero-trust architecture ensures that your sensitive financial data is
             fragmented, encrypted, and accessible only to authorized personnel.
@@ -69,7 +69,7 @@ const AboutWhy = () => (
         {/* SOC2 Type II */}
         <div className="flex-[2] border border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row items-start justify-between gap-6">
           <div className="flex-1">
-            <h3 className="text-[#07275a] font-bold text-[0.95rem] mb-2">SOC2 Type II Certified</h3>
+            <h3 className="text-[#072720] font-bold text-[0.95rem] mb-2">SOC2 Type II Certified</h3>
             <p className="text-gray-500 text-sm leading-relaxed">
               We undergo rigorous annual audits to maintain the highest industry standards
               for security, availability, and confidentiality.

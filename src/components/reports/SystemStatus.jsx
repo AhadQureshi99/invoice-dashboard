@@ -32,7 +32,7 @@ const SystemStatus = () => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${s?.online ? 'bg-green-500' : 'bg-red-500'}`} />
-        <p className="text-sm font-bold text-[#1e3a5f]">
+        <p className="text-sm font-bold text-[#0e5f4f]">
           {s?.online ? 'System Online: All services operational' : 'System Offline'}
         </p>
       </div>
@@ -44,7 +44,7 @@ const SystemStatus = () => {
             <p className="text-sm font-semibold text-gray-800">Archive Capacity: {used.toFixed(1)} GB / {total.toFixed(0)} GB</p>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2">
-            <div className="bg-[#1e3a5f] h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+            <div className="bg-[#0e5f4f] h-1.5 rounded-full" style={{ width: `${pct}%` }} />
           </div>
         </div>
 

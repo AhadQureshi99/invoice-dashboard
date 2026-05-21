@@ -4,7 +4,7 @@ const AboutStory = () => (
 
       {/* Left — text */}
       <div className="flex-1 min-w-0">
-        <h2 className="text-[1.4rem] font-bold text-[#1e3a5f] leading-snug mb-5">
+        <h2 className="text-[1.4rem] font-bold text-[#0e5f4f] leading-snug mb-5">
           Built for the Future of Fiscal Tech
         </h2>
         <div className="flex flex-col gap-4 text-gray-500 text-sm leading-relaxed">

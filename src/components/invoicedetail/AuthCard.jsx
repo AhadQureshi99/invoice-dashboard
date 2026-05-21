@@ -65,20 +65,20 @@ const AuthCard = () => {
       <div className="flex items-start gap-4">
         <div className="w-20 h-20 rounded-xl border-2 border-gray-200 bg-gray-50 flex-shrink-0 flex items-center justify-center overflow-hidden">
           <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
-            <rect x="2" y="2" width="12" height="12" rx="1" fill="#1e3a5f"/>
+            <rect x="2" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
             <rect x="4" y="4" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="5.5" y="5.5" width="5" height="5" rx="0.3" fill="#1e3a5f"/>
-            <rect x="26" y="2" width="12" height="12" rx="1" fill="#1e3a5f"/>
+            <rect x="5.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
+            <rect x="26" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
             <rect x="28" y="4" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="29.5" y="5.5" width="5" height="5" rx="0.3" fill="#1e3a5f"/>
-            <rect x="2" y="26" width="12" height="12" rx="1" fill="#1e3a5f"/>
+            <rect x="29.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
+            <rect x="2" y="26" width="12" height="12" rx="1" fill="#0e5f4f"/>
             <rect x="4" y="28" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="5.5" y="29.5" width="5" height="5" rx="0.3" fill="#1e3a5f"/>
+            <rect x="5.5" y="29.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
           </svg>
         </div>
         <div>
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">FBR Invoice No</p>
-          <p className="text-sm font-mono text-[#1e3a5f] font-bold leading-snug break-all">
+          <p className="text-sm font-mono text-[#0e5f4f] font-bold leading-snug break-all">
             {latest?.fbr_invoice_no || inv.fbr_invoice_no || '—'}
           </p>
         </div>

@@ -34,7 +34,7 @@ const InvoiceInfoCard = () => {
           {inv.invoice_ref_no && <p className="text-xs text-gray-400">INTERNAL REF: {inv.invoice_ref_no}</p>}
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-[#1e3a5f]">PKR {Number(total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          <p className="text-2xl font-black text-[#0e5f4f]">PKR {Number(total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Total Amount Due</p>
         </div>
       </div>
@@ -90,7 +90,7 @@ const InvoiceInfoCard = () => {
           </div>
           <div className="flex items-center gap-12 border-t border-gray-200 pt-2 mt-1">
             <span className="text-sm font-bold text-gray-800">Total Amount</span>
-            <span className="text-sm font-black text-[#1e3a5f] w-32 text-right">PKR {Number(total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            <span className="text-sm font-black text-[#0e5f4f] w-32 text-right">PKR {Number(total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
       </div>

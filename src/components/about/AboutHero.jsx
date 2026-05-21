@@ -7,7 +7,7 @@ const AboutHero = () => (
       className="absolute inset-0 w-full h-full object-cover object-center"
     />
     {/* Dark overlay */}
-    <div className="absolute inset-0 bg-[#0f2040]/75" />
+    <div className="absolute inset-0 bg-[#083f33]/75" />
 
     {/* Content */}
     <div className="relative z-10 max-w-6xl mx-auto px-8 pb-14 pt-16">

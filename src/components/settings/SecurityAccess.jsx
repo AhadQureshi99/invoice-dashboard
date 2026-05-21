@@ -79,7 +79,7 @@ const SecurityAccess = () => {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-      <p className="text-sm font-bold text-[#1e3a5f]">Security &amp; Access</p>
+      <p className="text-sm font-bold text-[#0e5f4f]">Security &amp; Access</p>
 
       <div className="flex items-center gap-3 border border-gray-100 rounded-xl p-3">
         <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -129,7 +129,7 @@ const SecurityAccess = () => {
         footer={
           <>
             <button onClick={() => setPwOpen(false)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button onClick={savePassword} disabled={pw.busy} className="bg-[#1e3a5f] hover:bg-[#0f2040] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <button onClick={savePassword} disabled={pw.busy} className="bg-[#0e5f4f] hover:bg-[#083f33] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
               {pw.busy ? 'Saving…' : 'Update Password'}
             </button>
           </>

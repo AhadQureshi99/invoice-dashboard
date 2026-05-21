@@ -36,7 +36,7 @@ const ReportsPage = () => {
 
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-[#1e3a5f] leading-tight">Reporting &amp; Download Center</h1>
+                <h1 className="text-2xl font-bold text-[#0e5f4f] leading-tight">Reporting &amp; Download Center</h1>
                 <p className="text-xs text-gray-400 mt-1">Export, generate, and manage your financial compliance documentation.</p>
               </div>
               <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ const ReportsPage = () => {
                   <HiOutlineRefresh className="w-4 h-4" />
                   Refresh Data
                 </button>
-                <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm">
+                <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm">
                   <HiOutlinePlusCircle className="w-4 h-4" />
                   Generate New Report
                 </button>
@@ -75,7 +75,7 @@ const ReportsPage = () => {
         footer={
           <>
             <button onClick={() => setOpen(false)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button onClick={handleGenerate} disabled={busy || !form.name} className="bg-[#1e3a5f] hover:bg-[#0f2040] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <button onClick={handleGenerate} disabled={busy || !form.name} className="bg-[#0e5f4f] hover:bg-[#083f33] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
               {busy ? 'Saving…' : 'Save'}
             </button>
           </>

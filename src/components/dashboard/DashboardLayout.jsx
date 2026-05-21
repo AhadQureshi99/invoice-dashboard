@@ -35,7 +35,7 @@ const DashboardLayout = ({ children }) => {
         {open && (
           <button
             className="lg:hidden absolute top-4 -right-10 w-8 h-8 bg-white rounded-full shadow-md
-                       flex items-center justify-center text-[#1e3a5f]"
+                       flex items-center justify-center text-[#0e5f4f]"
             onClick={() => setOpen(false)}
           >
             <HiOutlineX className="w-4 h-4" />
@@ -49,13 +49,13 @@ const DashboardLayout = ({ children }) => {
         {/* Mobile top bar with hamburger */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-2.5 bg-[#f0f4f8] border-b border-[#dce4ef] flex-shrink-0">
           <button
-            className="p-1.5 rounded-lg bg-[#1e3a5f] text-white flex-shrink-0"
+            className="p-1.5 rounded-lg bg-[#0e5f4f] text-white flex-shrink-0"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
           >
             <HiOutlineMenu className="w-5 h-5" />
           </button>
-          <span className="text-sm font-bold text-[#1e3a5f]">FBR Invoice Manager</span>
+          <span className="text-sm font-bold text-[#0e5f4f]">FBR Invoice Manager</span>
         </div>
 
         {/* Page content (topbar hidden on mobile via lg:flex, main area) */}

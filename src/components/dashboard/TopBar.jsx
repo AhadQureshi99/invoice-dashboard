@@ -53,7 +53,7 @@ const TopBar = () => {
           onChange={(e) => { setLocal(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
           placeholder="Search invoices, NTNs, buyer name..."
-          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
+          className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors"
         />
         {open && results.length > 0 && (
           <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
@@ -79,7 +79,7 @@ const TopBar = () => {
         )}
       </div>
 
-      <Link to="/dashboard/verification" className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+      <Link to="/dashboard/verification" className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
         Verify Invoice
       </Link>
 
@@ -94,7 +94,7 @@ const TopBar = () => {
 
       <div className="relative">
         <button onClick={() => setMenu(m => !m)} className="flex items-center gap-2.5 cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#0e5f4f] flex items-center justify-center flex-shrink-0">
             <span className="text-[11px] font-bold text-white">{initials(name)}</span>
           </div>
           <div className="leading-tight text-left">

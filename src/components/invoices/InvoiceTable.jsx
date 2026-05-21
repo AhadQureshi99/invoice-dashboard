@@ -67,7 +67,7 @@ const InvoiceTable = () => {
                   </span>
                 </td>
                 <td className={tdClass}>
-                  <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-medium text-gray-400 hover:text-[#1e3a5f] transition-colors">
+                  <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-medium text-gray-400 hover:text-[#0e5f4f] transition-colors">
                     View
                   </Link>
                 </td>
@@ -87,7 +87,7 @@ const InvoiceTable = () => {
             <select
               value={pageSize}
               onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
-              className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]/20 bg-white"
+              className="border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-[#0e5f4f]/20 bg-white"
             >
               <option value={25}>25</option>
               <option value={50}>50</option>
@@ -103,7 +103,7 @@ const InvoiceTable = () => {
               key={n}
               onClick={() => setPage(n)}
               className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium transition-colors ${
-                n === page ? 'bg-[#1e3a5f] text-white' : 'text-gray-500 hover:bg-gray-100'
+                n === page ? 'bg-[#0e5f4f] text-white' : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
               {n}

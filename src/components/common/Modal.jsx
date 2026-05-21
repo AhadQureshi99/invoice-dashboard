@@ -15,8 +15,8 @@ const Modal = ({ open, onClose, title, children, footer, maxWidth = 'max-w-md' }
       <div className={`relative bg-white rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}>
         {title && (
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <p className="text-sm font-bold text-[#1e3a5f]">{title}</p>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+            <p className="text-sm font-bold text-[#0e5f4f]">{title}</p>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">Ã—</button>
           </div>
         )}
         <div className="px-5 py-4 overflow-y-auto flex-1">

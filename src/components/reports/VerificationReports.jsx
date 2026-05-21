@@ -49,8 +49,8 @@ const VerificationReports = ({ refreshKey = 0, onChange }) => {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-[#1e3a5f]">Verification Reports</p>
-        <button onClick={load} className="p-1 text-gray-400 hover:text-[#1e3a5f]"><HiOutlineRefresh className="w-4 h-4" /></button>
+        <p className="text-sm font-bold text-[#0e5f4f]">Verification Reports</p>
+        <button onClick={load} className="p-1 text-gray-400 hover:text-[#0e5f4f]"><HiOutlineRefresh className="w-4 h-4" /></button>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -63,7 +63,7 @@ const VerificationReports = ({ refreshKey = 0, onChange }) => {
                 <p className="text-xs text-gray-400 mt-0.5">Click to generate</p>
               </div>
             </div>
-            <button onClick={() => generate(p.kind, p.name)} className="text-gray-400 hover:text-[#1e3a5f] transition-colors p-1">
+            <button onClick={() => generate(p.kind, p.name)} className="text-gray-400 hover:text-[#0e5f4f] transition-colors p-1">
               <HiOutlineDownload className="w-4 h-4" />
             </button>
           </div>
@@ -79,7 +79,7 @@ const VerificationReports = ({ refreshKey = 0, onChange }) => {
             </div>
             <button
               onClick={() => generate(r.kind, r.name)}
-              className="text-gray-400 hover:text-[#1e3a5f] transition-colors p-1"
+              className="text-gray-400 hover:text-[#0e5f4f] transition-colors p-1"
               title="Regenerate"
             >
               {r.status === 'ready' ? <HiOutlineDownload className="w-4 h-4" /> : <HiOutlineRefresh className="w-4 h-4" />}

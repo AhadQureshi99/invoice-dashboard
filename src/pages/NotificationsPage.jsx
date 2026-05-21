@@ -39,7 +39,7 @@ const NotificationsPage = () => {
 
             <div className="flex items-start justify-between flex-wrap gap-3">
               <div>
-                <h1 className="text-2xl font-black text-[#1e3a5f] leading-tight">Notification Center</h1>
+                <h1 className="text-2xl font-black text-[#0e5f4f] leading-tight">Notification Center</h1>
                 <p className="text-xs text-gray-400 mt-1 max-w-lg">
                   Monitor institutional alerts, batch processing status, and security audit logs.
                 </p>
@@ -74,7 +74,7 @@ const NotificationsPage = () => {
       <button
         onClick={() => setComposeOpen(true)}
         title="Create notification"
-        className="fixed bottom-6 right-6 w-12 h-12 bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-2xl flex items-center justify-center shadow-lg transition-colors z-50 text-xl font-light"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-2xl flex items-center justify-center shadow-lg transition-colors z-50 text-xl font-light"
       >
         +
       </button>
@@ -86,7 +86,7 @@ const NotificationsPage = () => {
         footer={
           <>
             <button onClick={() => setComposeOpen(false)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button onClick={compose} disabled={busy || !form.title} className="bg-[#1e3a5f] hover:bg-[#0f2040] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <button onClick={compose} disabled={busy || !form.title} className="bg-[#0e5f4f] hover:bg-[#083f33] disabled:opacity-60 text-white rounded-lg px-3 py-1.5 text-xs font-semibold">
               {busy ? 'Sending…' : 'Send'}
             </button>
           </>

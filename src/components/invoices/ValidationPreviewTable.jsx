@@ -82,7 +82,7 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
 
       <div className="flex items-start justify-between px-6 pt-5 pb-1">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Invoice Validation Preview</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Invoice Validation Preview</p>
           <p className="text-xs text-gray-400 mt-0.5">{count.toLocaleString()} invoice(s) matching current filters</p>
         </div>
         <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
             <HiOutlineFilter className="w-3 h-3" />
             EXPORT CSV
           </button>
-          <button onClick={authorizeAll} disabled={busy} className="flex items-center gap-1.5 bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60">
+          <button onClick={authorizeAll} disabled={busy} className="flex items-center gap-1.5 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60">
             <HiOutlineCheck className="w-3.5 h-3.5" />
             {busy ? 'Working…' : 'AUTHORIZE ALL READY'}
           </button>
@@ -120,7 +120,7 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
                 <td className={tdClass}>{Number(row.total_amount || 0).toLocaleString()}</td>
                 <td className={tdClass}><StatusBadge status={row.status} /></td>
                 <td className={tdClass}>
-                  <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-semibold text-gray-500 hover:text-[#1e3a5f] transition-colors">
+                  <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-semibold text-gray-500 hover:text-[#0e5f4f] transition-colors">
                     View
                   </Link>
                 </td>
@@ -137,7 +137,7 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
             key={n}
             onClick={() => setPage(n)}
             className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium transition-colors ${
-              n === page ? 'bg-[#1e3a5f] text-white' : 'text-gray-500 hover:bg-gray-100'
+              n === page ? 'bg-[#0e5f4f] text-white' : 'text-gray-500 hover:bg-gray-100'
             }`}
           >
             {n}

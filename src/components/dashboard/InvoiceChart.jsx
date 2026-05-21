@@ -51,7 +51,7 @@ const InvoiceChart = () => {
     <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Monthly Invoice Trend</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Monthly Invoice Trend</p>
           <p className="text-xs text-gray-400 mt-0.5">Processing volume for {new Date().getFullYear()}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">

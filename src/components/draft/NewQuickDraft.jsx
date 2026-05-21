@@ -5,7 +5,7 @@ import { logActivity } from '../../services/activity'
 
 const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
   placeholder:text-gray-300 text-gray-700
-  focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors`
+  focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors`
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
 const draftNumber = () => `DFT-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`
@@ -61,7 +61,7 @@ const NewQuickDraft = ({ onSaved }) => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
 
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-[#1e3a5f]">New Quick Draft</p>
+        <p className="text-sm font-bold text-[#0e5f4f]">New Quick Draft</p>
         <span className="text-[10px] text-gray-400 font-medium">ID: {form.invoice_number}</span>
       </div>
 
@@ -114,7 +114,7 @@ const NewQuickDraft = ({ onSaved }) => {
         </div>
         <div className="flex items-center justify-between pt-1 border-t border-gray-100">
           <span className="text-sm font-bold text-gray-800">Total Payable</span>
-          <span className="text-sm font-bold text-[#1e3a5f]">PKR {totals.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span className="text-sm font-bold text-[#0e5f4f]">PKR {totals.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
       </div>
 
@@ -133,7 +133,7 @@ const NewQuickDraft = ({ onSaved }) => {
           <HiOutlineEye className="w-4 h-4" />
           Preview
         </button>
-        <button onClick={handleSave} disabled={busy} className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-60">
+        <button onClick={handleSave} disabled={busy} className="bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-60">
           {busy ? 'Saving…' : 'Save Draft'}
         </button>
       </div>

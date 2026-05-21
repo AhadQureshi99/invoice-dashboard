@@ -16,7 +16,7 @@ const VerificationPage = () => {
           <div className="flex flex-col gap-5">
 
             <div>
-              <h1 className="text-2xl font-bold text-[#1e3a5f] leading-tight">Invoice Verification</h1>
+              <h1 className="text-2xl font-bold text-[#0e5f4f] leading-tight">Invoice Verification</h1>
               <p className="text-xs text-gray-400 mt-1">Verify invoice authenticity through FBR database in real-time</p>
             </div>
 
@@ -29,7 +29,7 @@ const VerificationPage = () => {
             <VerificationStats   refreshKey={refreshKey} />
 
             <p className="text-[11px] text-gray-400 pb-2">
-              © 2026{' '}
+              Â© 2026{' '}
               <a href="/" className="text-blue-500 hover:underline">Name</a>
               {' '}All rights reserved.
             </p>

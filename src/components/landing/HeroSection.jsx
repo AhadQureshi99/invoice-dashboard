@@ -10,7 +10,7 @@ const DashboardMockup = () => (
         <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
         <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
         <span className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-        <div className="flex-1 mx-3 bg-[#0f2040] rounded text-[9px] text-slate-500 px-2 py-0.5 text-center">
+        <div className="flex-1 mx-3 bg-[#083f33] rounded text-[9px] text-slate-500 px-2 py-0.5 text-center">
           taxguard.gov.pk/dashboard
         </div>
       </div>
@@ -28,7 +28,7 @@ const DashboardMockup = () => (
         <div className="flex-1 p-3 flex flex-col gap-2 overflow-hidden">
           {/* Top stat row */}
           <div className="flex gap-2">
-            {['#1e3a5f', '#0f2040', '#162a42'].map((bg, i) => (
+            {['#0e5f4f', '#083f33', '#162a42'].map((bg, i) => (
               <div key={i} className="flex-1 rounded-lg p-2" style={{ background: bg }}>
                 <div className="w-8 h-1 bg-slate-600 rounded mb-1" />
                 <div className="w-12 h-2 bg-blue-400/60 rounded" />
@@ -37,7 +37,7 @@ const DashboardMockup = () => (
           </div>
 
           {/* Chart area */}
-          <div className="flex-1 bg-[#1e3a5f]/40 rounded-lg p-2 relative overflow-hidden">
+          <div className="flex-1 bg-[#0e5f4f]/40 rounded-lg p-2 relative overflow-hidden">
             <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
@@ -60,11 +60,11 @@ const DashboardMockup = () => (
 
           {/* Bottom row */}
           <div className="flex gap-2">
-            <div className="flex-1 bg-[#1e3a5f]/30 rounded-lg p-2">
+            <div className="flex-1 bg-[#0e5f4f]/30 rounded-lg p-2">
               <div className="w-10 h-1.5 bg-slate-600 rounded mb-1" />
               <div className="w-16 h-2 bg-blue-300/50 rounded" />
             </div>
-            <div className="flex-1 bg-[#1e3a5f]/30 rounded-lg p-2">
+            <div className="flex-1 bg-[#0e5f4f]/30 rounded-lg p-2">
               <div className="w-10 h-1.5 bg-slate-600 rounded mb-1" />
               <div className="w-12 h-2 bg-slate-500/50 rounded" />
             </div>
@@ -85,7 +85,7 @@ const HeroSection = () => (
   <section className="max-w-6xl mx-auto px-6 pt-12 pb-10 flex flex-col md:flex-row items-center gap-10 md:gap-12">
     {/* Left */}
     <div className="flex-1 min-w-0">
-      <h1 className="text-[2.1rem] font-bold text-[#1e3a5f] leading-[1.2] max-w-sm">
+      <h1 className="text-[2.1rem] font-bold text-[#0e5f4f] leading-[1.2] max-w-sm">
         Secure Integrated Tax Compliance for Enterprise
       </h1>
       <p className="mt-4 text-gray-500 text-[0.95rem] leading-relaxed max-w-md">
@@ -95,14 +95,14 @@ const HeroSection = () => (
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <Link
           to="/register"
-          className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-sm font-semibold
+          className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-sm font-semibold
                      px-5 py-2.5 rounded-lg transition-colors"
         >
           Request Demo
         </Link>
         <Link
           to="/login"
-          className="border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f]/5
+          className="border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5
                      text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
         >
           Login to Dashboard

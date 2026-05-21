@@ -13,7 +13,7 @@ const DecorativeRings = () => (
 )
 
 const BadgeRow = ({ icon: Icon, text }) => (
-  <div className="flex items-center gap-3 bg-[#0f2040] rounded-lg px-4 py-3">
+  <div className="flex items-center gap-3 bg-[#083f33] rounded-lg px-4 py-3">
     <Icon className="text-slate-400 w-[15px] h-[15px] flex-shrink-0" />
     <span className="text-slate-300 text-xs">{text}</span>
   </div>

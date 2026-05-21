@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/AuthContext'
 import { useSearch } from '../../lib/SearchContext'
 
-const initials = (s) => (s || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || '·'
+const initials = (s) => (s || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || 'Â·'
 
 const PageTopBar = ({ title, subtitle, lastSync, primaryLabel = 'Verify Invoice', primaryTo = '/dashboard/verification', showSearch = false }) => {
   const { user, profile, signOut } = useAuth()
@@ -29,7 +29,7 @@ const PageTopBar = ({ title, subtitle, lastSync, primaryLabel = 'Verify Invoice'
 
       {title && (
         <div className="flex items-center gap-3">
-          <span className="text-sm font-bold text-[#1e3a5f]">{title}</span>
+          <span className="text-sm font-bold text-[#0e5f4f]">{title}</span>
           {subtitle && <span className="text-gray-300 text-sm">|</span>}
           {subtitle && <span className="text-xs text-gray-500">{subtitle}</span>}
           {lastSync && <span className="text-xs text-gray-400">{lastSync}</span>}
@@ -44,25 +44,25 @@ const PageTopBar = ({ title, subtitle, lastSync, primaryLabel = 'Verify Invoice'
             value={local}
             onChange={(e) => setLocal(e.target.value)}
             placeholder="Search..."
-            className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20"
+            className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-lg placeholder:text-gray-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20"
           />
         </div>
       )}
 
-      <Link to={primaryTo} className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+      <Link to={primaryTo} className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
         {primaryLabel}
       </Link>
 
       <div className="flex-1" />
 
       <div className="flex items-center gap-1.5 cursor-default">
-        <span className="text-lg leading-none">🇵🇰</span>
+        <span className="text-lg leading-none">ðŸ‡µðŸ‡°</span>
         <span className="text-sm font-medium text-gray-600">EN</span>
       </div>
 
       <div className="relative">
         <button onClick={() => setMenu(m => !m)} className="flex items-center gap-2.5 cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#0e5f4f] flex items-center justify-center flex-shrink-0">
             <span className="text-[11px] font-bold text-white">{initials(name)}</span>
           </div>
           <div className="leading-tight text-left">

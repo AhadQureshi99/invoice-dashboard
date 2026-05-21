@@ -35,7 +35,7 @@ const RecentActivity = () => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="flex flex-wrap items-start justify-between gap-3 px-6 pt-5 pb-1">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Recent Activity</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Recent Activity</p>
           <p className="text-xs text-gray-400 mt-0.5">Recent verification and draft events</p>
         </div>
         <button className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors whitespace-nowrap">

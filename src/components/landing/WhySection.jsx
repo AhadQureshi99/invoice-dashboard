@@ -13,14 +13,14 @@ const tiles = [
 ]
 
 const FeatureTile = ({ icon: Icon, label }) => (
-  <div className="bg-[#1e3a5f] rounded-xl px-5 py-4 flex items-center gap-3">
+  <div className="bg-[#0e5f4f] rounded-xl px-5 py-4 flex items-center gap-3">
     <Icon className="text-slate-300 w-5 h-5 flex-shrink-0" />
     <span className="text-white text-sm font-medium">{label}</span>
   </div>
 )
 
 const WhySection = () => (
-  <section className="w-full bg-[#0f2040] py-16">
+  <section className="w-full bg-[#083f33] py-16">
     <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
 
       {/* Left */}

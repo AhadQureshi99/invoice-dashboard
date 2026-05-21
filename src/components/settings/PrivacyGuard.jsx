@@ -25,7 +25,7 @@ const PrivacyGuard = () => {
   }
 
   return (
-    <div className="bg-[#1e3a5f] rounded-2xl p-5 flex flex-col text-center h-full relative overflow-hidden">
+    <div className="bg-[#0e5f4f] rounded-2xl p-5 flex flex-col text-center h-full relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%" viewBox="0 0 280 230" fill="none">
           <circle cx="200" cy="40" r="80" stroke="white" strokeWidth="1" fill="none"/>

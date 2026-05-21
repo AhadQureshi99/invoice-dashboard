@@ -83,7 +83,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
 
       <div className="flex items-center justify-between px-6 pt-5 pb-1">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Recent Drafts</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Recent Drafts</p>
           <p className="text-xs text-gray-400 mt-0.5">All your pending draft invoices</p>
         </div>
         <span className="text-xs font-semibold text-gray-500 tracking-wide">{rows.length} ITEMS</span>
@@ -133,10 +133,10 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
                         <button onClick={() => handlePromote(row)} className="p-1 text-gray-400 hover:text-green-600 transition-colors" title="Convert to invoice">
                           <HiOutlineCheckCircle className="w-4 h-4" />
                         </button>
-                        <button onClick={() => startEdit(row)} className="p-1 text-gray-400 hover:text-[#1e3a5f] transition-colors" title="Edit">
+                        <button onClick={() => startEdit(row)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Edit">
                           <HiOutlinePencil className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDuplicate(row.id)} className="p-1 text-gray-400 hover:text-[#1e3a5f] transition-colors" title="Duplicate">
+                        <button onClick={() => handleDuplicate(row.id)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Duplicate">
                           <HiOutlineDocumentDuplicate className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(row.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors" title="Delete">

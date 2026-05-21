@@ -77,7 +77,7 @@ const BulkUploadCard = ({ onUploaded }) => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex-[1.4] min-w-0">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-sm font-bold text-[#1e3a5f]">Bulk Invoice Processing</p>
+          <p className="text-sm font-bold text-[#0e5f4f]">Bulk Invoice Processing</p>
           <p className="text-xs text-gray-400 mt-0.5">Drag and drop your CSV ledger file here</p>
         </div>
         <div className="text-right">
@@ -101,7 +101,7 @@ const BulkUploadCard = ({ onUploaded }) => {
         onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f) }}
         onClick={() => ref.current?.click()}
         className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center py-12 cursor-pointer transition-colors ${
-          dragOver ? 'border-[#1e3a5f] bg-blue-50' : 'border-gray-200 bg-[#fafbfc] hover:border-[#1e3a5f]/40'
+          dragOver ? 'border-[#0e5f4f] bg-blue-50' : 'border-gray-200 bg-[#fafbfc] hover:border-[#0e5f4f]/40'
         }`}
       >
         <HiOutlineCloudUpload className="w-9 h-9 text-gray-300 mb-3" />

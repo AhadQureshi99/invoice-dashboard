@@ -26,7 +26,7 @@ const StatCard = ({ id, label, value, changeColor, sparkColor, linePath, areaExt
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
         <p className="text-xs font-medium text-gray-400 mb-2 truncate">{label}</p>
-        <p className="text-2xl font-bold text-[#1e3a5f] leading-none">{value}</p>
+        <p className="text-2xl font-bold text-[#0e5f4f] leading-none">{value}</p>
       </div>
       <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
         <span className={`text-xs font-semibold ${changeColor}`}>•</span>

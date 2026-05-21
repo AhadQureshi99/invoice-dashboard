@@ -31,7 +31,7 @@ const QuickActions = ({ onUpload }) => {
 
   return (
     <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <p className="text-sm font-bold text-[#1e3a5f] mb-4">Quick Actions</p>
+      <p className="text-sm font-bold text-[#0e5f4f] mb-4">Quick Actions</p>
       <div className="grid grid-cols-2 gap-3">
         {actions.map(({ icon: Icon, label, bg, onClick }) => (
           <button

@@ -23,7 +23,7 @@ const RolesLegend = () => {
       {roles.map(({ key, title, desc }) => (
         <div key={key} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-lg font-black tracking-wide text-[#1e3a5f]">{title}</p>
+            <p className="text-lg font-black tracking-wide text-[#0e5f4f]">{title}</p>
             <span className="text-xs font-bold text-gray-400">{counts[key] || 0} members</span>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
