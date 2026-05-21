@@ -101,7 +101,7 @@ const BulkUploadCard = ({ onUploaded }) => {
         onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f) }}
         onClick={() => ref.current?.click()}
         className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center py-12 cursor-pointer transition-colors ${
-          dragOver ? 'border-[#0e5f4f] bg-blue-50' : 'border-gray-200 bg-[#fafbfc] hover:border-[#0e5f4f]/40'
+          dragOver ? 'border-[#0e5f4f] bg-[#4eaa88]/15' : 'border-gray-200 bg-[#fafbfc] hover:border-[#0e5f4f]/40'
         }`}
       >
         <HiOutlineCloudUpload className="w-9 h-9 text-gray-300 mb-3" />
@@ -117,7 +117,7 @@ const BulkUploadCard = ({ onUploaded }) => {
       </div>
 
       <div className="mt-3 flex items-center justify-between">
-        <button onClick={downloadTemplate} className="text-xs font-semibold text-blue-600 hover:underline">
+        <button onClick={downloadTemplate} className="text-xs font-semibold text-[#0e5f4f] hover:underline">
           Download CSV template
         </button>
         {progress.errors > 0 && (

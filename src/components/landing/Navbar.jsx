@@ -51,7 +51,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/register"
-            className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold
+            className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-sm font-semibold
                        px-4 py-2 rounded-lg transition-colors"
           >
             Request Demo
@@ -79,7 +79,7 @@ const Navbar = () => {
             <Link to="/login" onClick={() => setOpen(false)}
               className="text-sm font-medium text-gray-700">Login</Link>
             <Link to="/register" onClick={() => setOpen(false)}
-              className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg text-center">
+              className="bg-[#0e5f4f] hover:bg-[#083f33] text-white text-sm font-semibold px-4 py-2 rounded-lg text-center">
               Request Demo
             </Link>
           </div>

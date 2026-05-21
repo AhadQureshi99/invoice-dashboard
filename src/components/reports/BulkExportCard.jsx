@@ -68,8 +68,8 @@ const BulkExportCard = ({ onCreated }) => {
       <div>
         <label className="block text-xs font-semibold text-gray-600 mb-2">Format Type</label>
         <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setFormat('zip')} className={`flex items-center gap-2.5 border rounded-xl p-3 transition-colors ${format === 'zip' ? 'border-[#0e5f4f] bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>
-            <div className="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <button onClick={() => setFormat('zip')} className={`flex items-center gap-2.5 border rounded-xl p-3 transition-colors ${format === 'zip' ? 'border-[#0e5f4f] bg-[#4eaa88]/15' : 'border-gray-200 hover:border-gray-300'}`}>
+            <div className="w-9 h-9 bg-[#0e5f4f] rounded-lg flex items-center justify-center flex-shrink-0">
               <span className="text-[10px] font-bold text-white">ZIP</span>
             </div>
             <span className="text-sm font-semibold text-gray-700">ZIP</span>

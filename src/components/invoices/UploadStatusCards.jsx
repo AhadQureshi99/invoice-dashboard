@@ -11,7 +11,7 @@ const CheckIcon = () => (
   </div>
 )
 const DuplicateIcon = () => (
-  <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+  <div className="w-11 h-11 rounded-xl bg-[#4eaa88]/15 flex items-center justify-center flex-shrink-0">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <rect x="3" y="6" width="12" height="14" rx="2" fill="#93C5FD"/>
       <rect x="7" y="2" width="12" height="14" rx="2" fill="#3B82F6"/>

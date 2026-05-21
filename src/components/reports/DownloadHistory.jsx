@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { listReports, deleteReport } from '../../services/reports'
 import { downloadCSV } from '../../lib/export'
 
-const fmtColor = { ZIP: 'text-blue-500', CSV: 'text-green-500', PDF: 'text-red-500', XLSX: 'text-emerald-500' }
+const fmtColor = { ZIP: 'text-[#0e5f4f]', CSV: 'text-green-500', PDF: 'text-red-500', XLSX: 'text-emerald-500' }
 
 const ExcelIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" rx="2" fill="#1D6F42"/><text x="2" y="11" fontSize="8" fontWeight="bold" fill="white">X</text></svg>

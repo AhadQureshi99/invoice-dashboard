@@ -81,7 +81,7 @@ const LoginForm = () => {
           rightLabel={
             <button
               type="button"
-              className="text-[11px] font-semibold text-blue-600 hover:text-blue-700
+              className="text-[11px] font-semibold text-navy-900 hover:text-navy-950
                          uppercase tracking-widest transition-colors"
             >
               Forgot Password?

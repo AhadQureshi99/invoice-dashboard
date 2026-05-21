@@ -24,7 +24,7 @@ const QuickActions = ({ onUpload }) => {
 
   const actions = [
     { icon: HiOutlineShieldCheck, label: 'Verify Invoice', bg: 'bg-emerald-500', onClick: () => navigate('/dashboard/verification') },
-    { icon: HiOutlinePencilAlt,   label: 'Create Draft',   bg: 'bg-blue-500',    onClick: () => navigate('/dashboard/draft') },
+    { icon: HiOutlinePencilAlt,   label: 'Create Draft',   bg: 'bg-[#0e5f4f]',    onClick: () => navigate('/dashboard/draft') },
     { icon: HiOutlineUpload,      label: 'Upload CSV',     bg: 'bg-red-500',     onClick: () => fileRef.current?.click() },
     { icon: HiOutlineDownload,    label: 'Export CSV',     bg: 'bg-teal-500',    onClick: exportAll },
   ]

@@ -6,7 +6,7 @@ const badgeClass = {
   success:  'bg-green-100  text-green-700  text-[11px] font-semibold px-2.5 py-0.5 rounded-full',
   invalid:  'bg-red-100    text-red-500   text-[11px] font-semibold px-2.5 py-0.5 rounded-full',
   saved:    'bg-gray-100   text-gray-600   text-[11px] font-semibold px-2.5 py-0.5 rounded-full',
-  updated:  'bg-blue-100   text-blue-700   text-[11px] font-semibold px-2.5 py-0.5 rounded-full',
+  updated:  'bg-[#4eaa88]/25   text-[#083f33]   text-[11px] font-semibold px-2.5 py-0.5 rounded-full',
 }
 
 const StatusBadge = ({ status, type }) => (

@@ -82,7 +82,7 @@ const SecurityAccess = () => {
       <p className="text-sm font-bold text-[#0e5f4f]">Security &amp; Access</p>
 
       <div className="flex items-center gap-3 border border-gray-100 rounded-xl p-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-xl bg-[#4eaa88]/15 flex items-center justify-center flex-shrink-0">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M9 2L15 5v5c0 4-2.8 7-6 8C5.8 17 3 14 3 10V5L9 2z" fill="#3B82F6" opacity=".2" stroke="#3B82F6" strokeWidth="1.4"/>
             <path d="M6 9l2.5 2.5 4-4" stroke="#3B82F6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>

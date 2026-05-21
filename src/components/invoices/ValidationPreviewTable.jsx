@@ -13,7 +13,7 @@ const badgeClass = {
   invalid:   'bg-red-50   text-red-500',
   failed:    'bg-red-50   text-red-500',
   draft:     'bg-gray-50  text-gray-500',
-  duplicate: 'bg-blue-100 text-blue-500',
+  duplicate: 'bg-[#4eaa88]/25 text-[#0e5f4f]',
   void:      'bg-gray-100 text-gray-500',
 }
 const labelFor = (s) => ({ ready: 'Ready', verified: 'Verified', missing: 'Missing Field', pending: 'Pending', invalid: 'Invalid', failed: 'Failed', draft: 'Draft', duplicate: 'Duplicate', void: 'Void' }[s] || s)

@@ -76,7 +76,7 @@ const NotificationList = ({ categories = [] }) => {
               {t.label}{t.key === 'unread' && count > 0 && activeTab === 'unread' ? ` (${count})` : ''}
             </button>
           ))}
-          <button onClick={handleMarkAll} className="ml-3 text-[11px] font-semibold text-blue-600 hover:underline">
+          <button onClick={handleMarkAll} className="ml-3 text-[11px] font-semibold text-[#0e5f4f] hover:underline">
             Mark all as read
           </button>
         </div>
@@ -99,7 +99,7 @@ const NotificationList = ({ categories = [] }) => {
         {loading && <div className="p-8 text-center text-xs text-gray-400">Loading…</div>}
         {!loading && rows.length === 0 && <div className="p-8 text-center text-xs text-gray-400">No notifications.</div>}
         {rows.map((n) => (
-          <div key={n.id} className={`px-5 py-4 flex items-start gap-4 hover:bg-gray-50/60 transition-colors ${n.is_read ? '' : 'bg-blue-50/30'}`}>
+          <div key={n.id} className={`px-5 py-4 flex items-start gap-4 hover:bg-gray-50/60 transition-colors ${n.is_read ? '' : 'bg-[#4eaa88]/30'}`}>
             {severityIcon(n.severity)}
 
             <div className="flex-1 min-w-0">
@@ -107,7 +107,7 @@ const NotificationList = ({ categories = [] }) => {
               <p className="text-xs text-gray-500 mt-1 leading-relaxed">{n.body}</p>
               <div className="mt-2 flex items-center gap-3">
                 {!n.is_read && (
-                  <button onClick={async () => { await markRead(n.id); load() }} className="text-[11px] font-semibold text-blue-600 hover:underline">
+                  <button onClick={async () => { await markRead(n.id); load() }} className="text-[11px] font-semibold text-[#0e5f4f] hover:underline">
                     Mark as read
                   </button>
                 )}

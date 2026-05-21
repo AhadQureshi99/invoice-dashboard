@@ -91,7 +91,7 @@ const AuthCard = () => {
         </div>
         <div className="flex justify-between">
           <span className="text-xs text-gray-400">Response Time</span>
-          <span className="text-xs font-semibold text-blue-600">{latest?.response_time_ms ? `${(latest.response_time_ms / 1000).toFixed(2)}s` : '—'}</span>
+          <span className="text-xs font-semibold text-[#0e5f4f]">{latest?.response_time_ms ? `${(latest.response_time_ms / 1000).toFixed(2)}s` : '—'}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-xs text-gray-400">Verified On</span>

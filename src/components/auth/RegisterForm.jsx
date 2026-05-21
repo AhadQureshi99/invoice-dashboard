@@ -141,9 +141,9 @@ const RegisterForm = () => {
           <span className="text-sm text-gray-600 leading-relaxed">
             I certify that the information provided is accurate and I agree to the
             Institutional{' '}
-            <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>
+            <a href="#" className="text-[#0e5f4f] hover:underline">Terms of Service</a>
             {' '}and{' '}
-            <a href="#" className="text-blue-600 font-semibold hover:underline">Data Handling Policies.</a>
+            <a href="#" className="text-[#0e5f4f] font-semibold hover:underline">Data Handling Policies.</a>
           </span>
         </label>
 

@@ -6,7 +6,7 @@ import Modal from '../common/Modal'
 const initials = (s) => (s || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || '·'
 
 const roleColor = {
-  admin:      'bg-blue-100 text-blue-600',
+  admin:      'bg-[#4eaa88]/25 text-[#0e5f4f]',
   accountant: 'bg-purple-100 text-purple-600',
   viewer:     'bg-gray-100 text-gray-600',
 }

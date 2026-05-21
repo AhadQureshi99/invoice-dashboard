@@ -103,7 +103,7 @@ const InvoiceDetailPage = () => {
 
             <p className="text-[11px] text-gray-400 pb-2">
               © 2026{' '}
-              <a href="/" className="text-blue-500 hover:underline">Name</a>
+              <a href="/" className="text-[#0e5f4f] hover:underline">Name</a>
               {' '}All rights reserved.
             </p>
 
