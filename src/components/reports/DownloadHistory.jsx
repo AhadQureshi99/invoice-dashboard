@@ -1,101 +1,114 @@
-const formats = ['ZIP', 'CSV', 'ZIP', 'ZIP', 'ZIP']
-const fmtColor = { ZIP: 'text-blue-500', CSV: 'text-green-500' }
+import { useEffect, useState } from 'react'
+import { listReports, deleteReport } from '../../services/reports'
+import { downloadCSV } from '../../lib/export'
 
-const rows = formats.map((fmt, i) => ({
-  name: 'Q2_Sales_Invoices_Bulk.zip',
-  timestamp: 'Oct 24, 2023 | 09:42 AM',
-  user: 'Arslan Malik',
-  format: fmt,
-  key: i,
-}))
+const fmtColor = { ZIP: 'text-blue-500', CSV: 'text-green-500', PDF: 'text-red-500', XLSX: 'text-emerald-500' }
 
-/* Excel / PDF icon buttons */
 const ExcelIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <rect width="14" height="14" rx="2" fill="#1D6F42"/>
-    <text x="2" y="11" fontSize="8" fontWeight="bold" fill="white">X</text>
-  </svg>
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" rx="2" fill="#1D6F42"/><text x="2" y="11" fontSize="8" fontWeight="bold" fill="white">X</text></svg>
 )
 const PdfIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <rect width="14" height="14" rx="2" fill="#E5251A"/>
-    <text x="1" y="11" fontSize="6.5" fontWeight="bold" fill="white">PDF</text>
-  </svg>
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" rx="2" fill="#E5251A"/><text x="1" y="11" fontSize="6.5" fontWeight="bold" fill="white">PDF</text></svg>
 )
 
 const thClass = 'text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left pb-3'
 const tdClass = 'text-sm text-gray-600 py-3.5'
+const PAGE_SIZE = 10
 
-const DownloadHistory = () => (
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+const fmtTs = (iso) => iso ? new Date(iso).toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
 
-    {/* Header */}
-    <div className="flex items-start justify-between px-6 pt-5 pb-1">
-      <div>
-        <p className="text-sm font-bold text-[#1e3a5f]">Recent Download History</p>
-        <p className="text-xs text-gray-400 mt-0.5">Recent Download History</p>
-      </div>
-      <div className="flex items-center gap-2">
-        <button className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5
-                           text-xs text-gray-600 hover:bg-gray-50 transition-colors">
-          <ExcelIcon /> Excel
-        </button>
-        <button className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5
-                           text-xs text-gray-600 hover:bg-gray-50 transition-colors">
-          <PdfIcon /> PDF
-        </button>
-      </div>
-    </div>
+const DownloadHistory = ({ refreshKey = 0 }) => {
+  const [rows,    setRows]    = useState([])
+  const [count,   setCount]   = useState(0)
+  const [page,    setPage]    = useState(1)
+  const [loading, setLoading] = useState(true)
 
-    {/* Table */}
-    <div className="px-6 overflow-x-auto">
-      <table className="w-full min-w-[600px]">
-        <thead>
-          <tr className="border-b border-gray-100">
-            <th className={thClass}>Document Name</th>
-            <th className={thClass}>Timestamp</th>
-            <th className={thClass}>User</th>
-            <th className={thClass}>Format</th>
-            <th className={thClass}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.key} className="border-b border-gray-50 last:border-0">
-              <td className={`${tdClass} font-medium text-gray-800`}>{row.name}</td>
-              <td className={`${tdClass} text-gray-500`}>{row.timestamp}</td>
-              <td className={tdClass}>{row.user}</td>
-              <td className={tdClass}>
-                <span className={`text-xs font-bold ${fmtColor[row.format]}`}>{row.format}</span>
-              </td>
-              <td className={tdClass}>
-                <button className="text-xs font-semibold text-gray-500 hover:text-[#1e3a5f] transition-colors">
-                  Re-download
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+  const load = () => {
+    setLoading(true)
+    listReports({ limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE })
+      .then(({ rows, count }) => { setRows(rows); setCount(count) })
+      .finally(() => setLoading(false))
+  }
+  useEffect(load, [page, refreshKey])
 
-    {/* Footer */}
-    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-50">
-      <span className="text-xs text-gray-400">Showing 1-15 of 284 logs</span>
-      <div className="flex items-center gap-1">
-        <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">‹</button>
-        {[1,2,3,4,5].map(n => (
-          <button key={n}
-            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium transition-colors ${
-              n === 1 ? 'bg-[#1e3a5f] text-white' : 'text-gray-500 hover:bg-gray-100'
-            }`}>
-            {n}
+  const pages = Math.max(1, Math.ceil(count / PAGE_SIZE))
+
+  const exportToCSV = () => {
+    downloadCSV(rows.map(r => ({
+      name: r.name, kind: r.kind, format: r.format, status: r.status, size_bytes: r.size_bytes, created_at: r.created_at,
+    })), ['name','kind','format','status','size_bytes','created_at'], `download-history-${Date.now()}.csv`)
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+      <div className="flex items-start justify-between px-6 pt-5 pb-1">
+        <div>
+          <p className="text-sm font-bold text-[#1e3a5f]">Recent Download History</p>
+          <p className="text-xs text-gray-400 mt-0.5">All reports generated by you</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={exportToCSV} className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors">
+            <ExcelIcon /> Excel
           </button>
-        ))}
-        <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
+          <button onClick={() => window.print()} className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors">
+            <PdfIcon /> PDF
+          </button>
+        </div>
+      </div>
+
+      <div className="px-6 overflow-x-auto">
+        <table className="w-full min-w-[600px]">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className={thClass}>Document Name</th>
+              <th className={thClass}>Timestamp</th>
+              <th className={thClass}>Status</th>
+              <th className={thClass}>Format</th>
+              <th className={thClass}>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading && <tr><td colSpan={5} className="text-center py-8 text-xs text-gray-400">Loading…</td></tr>}
+            {!loading && rows.length === 0 && <tr><td colSpan={5} className="text-center py-8 text-xs text-gray-400">No downloads yet</td></tr>}
+            {rows.map((row) => {
+              const fmt = (row.format || '').toUpperCase()
+              return (
+                <tr key={row.id} className="border-b border-gray-50 last:border-0">
+                  <td className={`${tdClass} font-medium text-gray-800`}>{row.name}</td>
+                  <td className={`${tdClass} text-gray-500`}>{fmtTs(row.created_at)}</td>
+                  <td className={tdClass}>
+                    <span className={`text-[11px] font-semibold ${row.status === 'ready' ? 'text-green-500' : row.status === 'processing' ? 'text-orange-500' : 'text-red-500'}`}>
+                      {row.status?.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className={tdClass}>
+                    <span className={`text-xs font-bold ${fmtColor[fmt] || 'text-gray-500'}`}>{fmt}</span>
+                  </td>
+                  <td className={tdClass}>
+                    <button onClick={() => deleteReport(row.id).then(load)} className="text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-50">
+        <span className="text-xs text-gray-400">Showing {rows.length} of {count} logs</span>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">‹</button>
+          {Array.from({ length: Math.min(5, pages) }, (_, i) => i + 1).map(n => (
+            <button key={n} onClick={() => setPage(n)} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium transition-colors ${n === page ? 'bg-[#1e3a5f] text-white' : 'text-gray-500 hover:bg-gray-100'}`}>{n}</button>
+          ))}
+          <button onClick={() => setPage(p => Math.min(pages, p + 1))} className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default DownloadHistory

@@ -1,40 +1,5 @@
-import { HiOutlineRefresh } from 'react-icons/hi'
+import PageTopBar from '../common/PageTopBar'
 
-const DraftTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
-
-    <div className="flex items-center gap-3">
-      <span className="text-sm font-bold text-[#1e3a5f]">Verification Center</span>
-      <span className="text-xs text-gray-400">Last Sync : 2 min ago</span>
-    </div>
-
-    <button className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-xs font-semibold
-                       px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
-      Verify Invoice
-    </button>
-
-    <div className="flex items-center gap-1.5 text-xs text-gray-400">
-      <HiOutlineRefresh className="w-3.5 h-3.5" />
-      AUTO SAVING...
-    </div>
-
-    <div className="flex-1" />
-
-    <div className="flex items-center gap-1.5 cursor-pointer">
-      <span className="text-lg leading-none">🇳🇴</span>
-      <span className="text-sm font-medium text-gray-600">EN</span>
-    </div>
-
-    <div className="flex items-center gap-2.5 cursor-pointer">
-      <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
-        <span className="text-[11px] font-bold text-white">RP</span>
-      </div>
-      <div className="leading-tight">
-        <p className="text-xs font-semibold text-gray-800">Robert Patinson</p>
-        <p className="text-[10px] text-gray-400">Super Admin</p>
-      </div>
-    </div>
-  </header>
-)
+const DraftTopBar = () => <PageTopBar title="Draft Center" subtitle="Auto-saving" showSearch />
 
 export default DraftTopBar

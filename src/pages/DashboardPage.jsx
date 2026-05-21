@@ -37,7 +37,7 @@ const DashboardPage = () => (
           </div>
         </div>
 
-        {/* Recent activity */}}
+        {/* Recent activity */}
         <RecentActivity />
 
         {/* Footer */}

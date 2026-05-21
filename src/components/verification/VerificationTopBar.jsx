@@ -1,37 +1,19 @@
-const VerificationTopBar = () => (
-  <header className="sticky top-0 z-40 bg-[#f0f4f8] border-b border-[#dce4ef] px-6 py-3 hidden lg:flex items-center gap-4">
+import { useEffect, useState } from 'react'
+import { getSystemStatus } from '../../services/system'
+import PageTopBar from '../common/PageTopBar'
 
-    {/* Title + sync */}
-    <div className="flex items-center gap-3">
-      <span className="text-sm font-bold text-[#1e3a5f]">Verification Center</span>
-      <span className="text-xs text-gray-400">Last Sync : 2 min ago</span>
-    </div>
+const ago = (iso) => {
+  if (!iso) return '—'
+  const sec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (sec < 60) return `${sec}s ago`
+  if (sec < 3600) return `${Math.floor(sec / 60)} min ago`
+  return `${Math.floor(sec / 3600)} h ago`
+}
 
-    {/* Verify Invoice */}
-    <button className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white text-xs font-semibold
-                       px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
-      Verify Invoice
-    </button>
-
-    <div className="flex-1" />
-
-    {/* Language */}
-    <div className="flex items-center gap-1.5 cursor-pointer">
-      <span className="text-lg leading-none">🇳🇴</span>
-      <span className="text-sm font-medium text-gray-600">EN</span>
-    </div>
-
-    {/* User */}
-    <div className="flex items-center gap-2.5 cursor-pointer">
-      <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
-        <span className="text-[11px] font-bold text-white">RP</span>
-      </div>
-      <div className="leading-tight">
-        <p className="text-xs font-semibold text-gray-800">Robert Patinson</p>
-        <p className="text-[10px] text-gray-400">Super Admin</p>
-      </div>
-    </div>
-  </header>
-)
+const VerificationTopBar = () => {
+  const [last, setLast] = useState(null)
+  useEffect(() => { getSystemStatus().then(s => setLast(s?.last_sync_at)).catch(() => {}) }, [])
+  return <PageTopBar title="Verification Center" lastSync={`Last Sync: ${ago(last)}`} showSearch />
+}
 
 export default VerificationTopBar

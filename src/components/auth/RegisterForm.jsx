@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { HiOutlineMail } from 'react-icons/hi'
+import { useAuth } from '../../lib/AuthContext'
 
 const InputField = ({ id, label, type = 'text', value, onChange, placeholder, icon: Icon }) => (
   <div>
@@ -30,27 +31,45 @@ const InputField = ({ id, label, type = 'text', value, onChange, placeholder, ic
 )
 
 const RegisterForm = () => {
+  const { signUp } = useAuth()
+  const navigate   = useNavigate()
   const [fields, setFields] = useState({
-    idType:       '',
+    idType:       'NTN',
     credential:   '',
     entityName:   '',
     email:        '',
     password:     '',
     confirmPass:  '',
   })
-  const [agreed, setAgreed] = useState(false)
+  const [agreed,  setAgreed]  = useState(false)
+  const [error,   setError]   = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const set = (key) => (e) => setFields((f) => ({ ...f, [key]: e.target.value }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Registration logic goes here
+    setError(null)
+
+    if (!agreed)                              return setError('You must accept the terms.')
+    if (fields.password !== fields.confirmPass) return setError('Passwords do not match.')
+    if (fields.password.length < 6)            return setError('Password must be at least 6 characters.')
+
+    setLoading(true)
+    const { error: err } = await signUp(fields.email, fields.password, {
+      id_type:        fields.idType,
+      credential_no:  fields.credential,
+      entity_name:    fields.entityName,
+      role:           'admin',
+    })
+    setLoading(false)
+    if (err) { setError(err.message); return }
+    navigate('/dashboard')
   }
 
   return (
     <div className="w-full md:w-[58%] bg-white px-8 md:px-10 py-9 flex flex-col justify-center overflow-y-auto">
 
-      {/* Heading */}
       <h2 className="text-[1.65rem] font-bold text-gray-900 leading-tight">Create New Account</h2>
       <p className="mt-1.5 text-sm text-gray-500 leading-relaxed">
         Enter your official credentials to register for the Invoice Management System.
@@ -58,7 +77,6 @@ const RegisterForm = () => {
 
       <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-4">
 
-        {/* Row 1 — 2 columns */}
         <div className="grid grid-cols-2 gap-4">
           <InputField
             id="idType"
@@ -77,7 +95,6 @@ const RegisterForm = () => {
           />
         </div>
 
-        {/* Legal entity — full width */}
         <InputField
           id="entityName"
           label="Legal Entity Name / Full Name"
@@ -86,7 +103,6 @@ const RegisterForm = () => {
           placeholder="As per official registration"
         />
 
-        {/* Email — full width */}
         <InputField
           id="email"
           label="Official Contact Email"
@@ -96,7 +112,6 @@ const RegisterForm = () => {
           placeholder="name@organization.gov.pk"
         />
 
-        {/* Row 2 — 2 columns passwords */}
         <div className="grid grid-cols-2 gap-4">
           <InputField
             id="password"
@@ -116,7 +131,6 @@ const RegisterForm = () => {
           />
         </div>
 
-        {/* Terms checkbox */}
         <label className="flex items-start gap-2.5 cursor-pointer">
           <input
             type="checkbox"
@@ -133,24 +147,28 @@ const RegisterForm = () => {
           </span>
         </label>
 
-        {/* Submit */}
+        {error && (
+          <div className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
+          disabled={loading}
           className="w-full py-3.5 bg-navy-900 hover:bg-navy-950 text-white text-sm
-                     font-semibold rounded-lg transition-colors mt-1"
+                     font-semibold rounded-lg transition-colors mt-1 disabled:opacity-60"
         >
-          Complete Registration
+          {loading ? 'Registering…' : 'Complete Registration'}
         </button>
       </form>
 
-      {/* Divider */}
       <hr className="my-5 border-gray-200" />
 
-      {/* Login link */}
       <div className="text-center">
         <p className="text-sm text-gray-500">Already have an authorized account?</p>
         <Link
-          to="/"
+          to="/login"
           className="text-sm text-navy-900 font-bold hover:underline transition-colors"
         >
           Login to Dashboard

@@ -1,4 +1,6 @@
-/* Archive capacity bar-chart icon */
+import { useEffect, useState } from 'react'
+import { getSystemStatus } from '../../services/system'
+
 const ArchiveIcon = () => (
   <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -9,8 +11,6 @@ const ArchiveIcon = () => (
     </svg>
   </div>
 )
-
-/* Clock/auto-purge icon */
 const PurgeIcon = () => (
   <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -20,35 +20,43 @@ const PurgeIcon = () => (
   </div>
 )
 
-const SystemStatus = () => (
-  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
+const SystemStatus = () => {
+  const [s, setS] = useState(null)
+  useEffect(() => { getSystemStatus().then(setS).catch(() => {}) }, [])
 
-    {/* Status header */}
-    <div className="flex items-center gap-2">
-      <span className="w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0 shadow-sm shadow-green-300" />
-      <p className="text-sm font-bold text-[#1e3a5f]">System Online: All services operational</p>
-    </div>
+  const used  = Number(s?.archive_used_gb || 0)
+  const total = Number(s?.archive_total_gb || 100)
+  const pct   = total ? Math.min(100, Math.round((used / total) * 100)) : 0
 
-    <div className="flex flex-col gap-3 mt-1">
-      {/* Archive capacity */}
-      <div className="flex items-center gap-3 border border-gray-100 rounded-xl p-3">
-        <ArchiveIcon />
-        <div>
-          <p className="text-sm font-semibold text-gray-800">Archive Capacity: 42.8 GB / 100 GB</p>
-        </div>
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${s?.online ? 'bg-green-500' : 'bg-red-500'}`} />
+        <p className="text-sm font-bold text-[#1e3a5f]">
+          {s?.online ? 'System Online: All services operational' : 'System Offline'}
+        </p>
       </div>
 
-      {/* Auto-purge */}
-      <div className="flex items-center gap-3 border border-gray-100 rounded-xl p-3">
-        <PurgeIcon />
-        <div>
+      <div className="flex flex-col gap-3 mt-1">
+        <div className="border border-gray-100 rounded-xl p-3">
+          <div className="flex items-center gap-3">
+            <ArchiveIcon />
+            <p className="text-sm font-semibold text-gray-800">Archive Capacity: {used.toFixed(1)} GB / {total.toFixed(0)} GB</p>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+            <div className="bg-[#1e3a5f] h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 border border-gray-100 rounded-xl p-3">
+          <PurgeIcon />
           <p className="text-sm font-semibold text-gray-800 leading-snug">
-            Auto-purge enabled for logs older<br />than 365 days
+            Auto-purge enabled for logs older<br />than {s?.auto_purge_days || 365} days
           </p>
         </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default SystemStatus

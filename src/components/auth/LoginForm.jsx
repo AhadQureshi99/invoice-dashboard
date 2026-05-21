@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { HiOutlineMail, HiOutlineLockClosed } from 'react-icons/hi'
+import { useAuth } from '../../lib/AuthContext'
 
 const InputField = ({ id, label, type, value, onChange, placeholder, icon: Icon, rightLabel }) => (
   <div>
@@ -32,19 +33,26 @@ const InputField = ({ id, label, type, value, onChange, placeholder, icon: Icon,
 )
 
 const LoginForm = () => {
+  const { signIn }   = useAuth()
+  const navigate     = useNavigate()
   const [email,      setEmail]      = useState('')
   const [password,   setPassword]   = useState('')
   const [rememberMe, setRememberMe] = useState(false)
+  const [error,      setError]      = useState(null)
+  const [loading,    setLoading]    = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Authentication logic goes here
+    setError(null); setLoading(true)
+    const { error: err } = await signIn(email, password)
+    setLoading(false)
+    if (err) { setError(err.message); return }
+    navigate('/dashboard')
   }
 
   return (
     <div className="w-full md:w-[58%] bg-white px-8 md:px-10 py-10 md:py-11 flex flex-col justify-center">
 
-      {/* Heading */}
       <h2 className="text-[1.65rem] font-bold text-gray-900 leading-tight">Login</h2>
       <p className="mt-1.5 text-sm text-gray-500 leading-relaxed">
         Enter your credentials to access your organization dashboard.
@@ -52,7 +60,6 @@ const LoginForm = () => {
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
 
-        {/* Email */}
         <InputField
           id="email"
           label="Email Address"
@@ -63,7 +70,6 @@ const LoginForm = () => {
           icon={HiOutlineMail}
         />
 
-        {/* Password */}
         <InputField
           id="password"
           label="Password"
@@ -83,7 +89,6 @@ const LoginForm = () => {
           }
         />
 
-        {/* Remember me */}
         <label className="flex items-center gap-2.5 cursor-pointer w-fit">
           <input
             type="checkbox"
@@ -96,24 +101,29 @@ const LoginForm = () => {
           </span>
         </label>
 
-        {/* Submit */}
+        {error && (
+          <div className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
+          disabled={loading}
           className="w-full py-3.5 bg-navy-900 hover:bg-navy-950 text-white text-xs
-                     font-semibold uppercase tracking-[0.18em] rounded-lg transition-colors"
+                     font-semibold uppercase tracking-[0.18em] rounded-lg transition-colors
+                     disabled:opacity-60"
         >
-          Continue
+          {loading ? 'Signing in…' : 'Continue'}
         </button>
       </form>
 
-      {/* Divider */}
       <hr className="my-6 border-gray-200" />
 
-      {/* Register link */}
       <div className="text-center">
         <p className="text-sm text-gray-500">Don&apos;t have an enterprise account?</p>
         <Link to="/register" className="text-sm text-navy-900 font-bold hover:underline transition-colors">
-          Contact Administrator
+          Register here
         </Link>
       </div>
     </div>

@@ -1,25 +1,138 @@
-import { useState } from 'react'
-import { HiInformationCircle } from 'react-icons/hi'
+import { useRef, useState } from 'react'
+import { HiInformationCircle, HiOutlineCloudUpload } from 'react-icons/hi'
+import { verifyAndRecord } from '../../services/fbr'
+import { logActivity } from '../../services/activity'
+import { parseCSV } from '../../lib/export'
 
-const VerificationForm = () => {
-  const [tab, setTab] = useState('single')
+const initial = {
+  invoice_number: '',
+  invoice_date:   new Date().toISOString().slice(0, 10),
+  seller_ntn:     '',
+  seller_name:    '',
+  seller_province:'Punjab',
+  seller_address: '',
+  buyer_ntn:      '',
+  buyer_name:     '',
+  buyer_province: 'Punjab',
+  buyer_address:  '',
+  buyer_reg_type: 'Registered',
+  scenario_id:    'SN000',
+  hs_code:        '0000.0000',
+  description:    '',
+  quantity:       1,
+  rate:           '18%',
+  uom:            'Numbers, pieces, units',
+  sales_tax:      0,
+  total:          0,
+  value_excl_st:  0,
+  sale_type:      'Goods at standard rate (default)',
+}
+
+const Field = ({ label, value, onChange, type = 'text', placeholder = '' }) => (
+  <div>
+    <label className="block text-xs font-semibold text-gray-700 mb-1.5">{label}</label>
+    <input
+      type={type} value={value} onChange={onChange} placeholder={placeholder}
+      className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder:text-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
+    />
+  </div>
+)
+
+const VerificationForm = ({ onResult }) => {
+  const [tab, setTab]   = useState('single')
+  const [form, setForm] = useState(initial)
+  const [busy, setBusy] = useState(false)
+  const [msg,  setMsg]  = useState(null)
+  const [bulk, setBulk] = useState({ done: 0, total: 0, errors: 0, results: [] })
+  const ref = useRef(null)
+
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+  const handleClear = () => { setForm(initial); setMsg(null) }
+
+  const handleVerify = async () => {
+    setMsg(null); setBusy(true)
+    try {
+      const payload = {
+        ...form,
+        invoice_ref_no: form.invoice_number,
+        items: [{
+          hs_code: form.hs_code, description: form.description, rate: form.rate, uom: form.uom,
+          quantity: Number(form.quantity), total: Number(form.total),
+          value_excl_st: Number(form.value_excl_st), sales_tax: Number(form.sales_tax),
+          sale_type: form.sale_type,
+        }],
+      }
+      const result = await verifyAndRecord(payload)
+      await logActivity({
+        action:  'Invoice Verification',
+        subject: form.invoice_number || 'Manual',
+        status:  result.status === 'verified' ? 'Verified' : 'Invalid',
+        type:    result.status === 'verified' ? 'verified' : 'invalid',
+        metadata:{ duration_ms: result.durationMs },
+      })
+      setMsg({ kind: result.status, text: result.status === 'verified'
+        ? `Verified by FBR in ${(result.durationMs / 1000).toFixed(1)}s`
+        : (result.response?.validationResponse?.error || 'FBR rejected the invoice') })
+      onResult?.(result)
+    } catch (err) {
+      setMsg({ kind: 'invalid', text: err.message })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const handleBulkFile = async (file) => {
+    setBusy(true)
+    try {
+      const text = await file.text()
+      const { records } = parseCSV(text)
+      setBulk({ done: 0, total: records.length, errors: 0, results: [] })
+      let done = 0, errors = 0
+      const results = []
+      for (const r of records) {
+        try {
+          const payload = {
+            invoice_number: r.invoice_number, invoice_date: r.invoice_date,
+            seller_ntn:     r.seller_ntn,     seller_name: r.seller_name,
+            seller_province:r.seller_province,seller_address: r.seller_address,
+            buyer_ntn:      r.buyer_ntn,      buyer_name:  r.buyer_name,
+            buyer_province: r.buyer_province, buyer_address: r.buyer_address,
+            buyer_reg_type: r.buyer_reg_type || 'Registered',
+            scenario_id:    r.scenario_id || 'SN000',
+            invoice_ref_no: r.invoice_number,
+            items: [{
+              hs_code: r.hs_code || '0000.0000', description: r.description, rate: r.rate || '0%',
+              uom: r.uom, quantity: Number(r.quantity || 0),
+              total: Number(r.total || 0), value_excl_st: Number(r.value_excl_st || 0),
+              sales_tax: Number(r.sales_tax || 0), sale_type: r.sale_type,
+            }],
+          }
+          const res = await verifyAndRecord(payload)
+          results.push({ invoice: r.invoice_number, status: res.status })
+          done += 1
+        } catch (e) {
+          results.push({ invoice: r.invoice_number, status: 'failed', error: e.message })
+          errors += 1
+        }
+        setBulk({ done: done + errors, total: records.length, errors, results: [...results] })
+      }
+      onResult?.()
+    } finally { setBusy(false) }
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex-[1.75] min-w-0 flex flex-col">
 
-      {/* Tabs */}
       <div className="flex gap-6 border-b border-gray-100 mb-6">
         {[
           { key: 'single', label: 'Single Verification' },
-          { key: 'bulk',   label: 'Bulk Verification'   },
+          { key: 'bulk',   label: 'Bulk Verification' },
         ].map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             className={`pb-3 text-sm font-semibold transition-colors ${
-              tab === key
-                ? 'text-[#1e3a5f] border-b-2 border-[#1e3a5f]'
-                : 'text-gray-400 hover:text-gray-600'
+              tab === key ? 'text-[#1e3a5f] border-b-2 border-[#1e3a5f]' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             {label}
@@ -29,76 +142,78 @@ const VerificationForm = () => {
 
       {tab === 'single' ? (
         <div className="flex flex-col gap-5">
-          {/* Row 1 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice Number</label>
-              <input
-                type="text"
-                placeholder="e.g INV-2024-00"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                           placeholder:text-gray-300 text-gray-700
-                           focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Date of Insurance</label>
-              <input
-                type="text"
-                placeholder="mm/dd/yy"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                           placeholder:text-gray-300 text-gray-700
-                           focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
-              />
-            </div>
+            <Field label="Invoice Number" value={form.invoice_number} onChange={set('invoice_number')} placeholder="e.g INV-2026-001" />
+            <Field label="Invoice Date"   type="date" value={form.invoice_date}   onChange={set('invoice_date')} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <Field label="Seller NTN" value={form.seller_ntn} onChange={set('seller_ntn')} placeholder="xxxxxxxxx-x" />
+            <Field label="Buyer NTN"  value={form.buyer_ntn}  onChange={set('buyer_ntn')}  placeholder="xxxxxxxxx-x" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <Field label="Seller Business Name" value={form.seller_name} onChange={set('seller_name')} />
+            <Field label="Buyer Business Name"  value={form.buyer_name}  onChange={set('buyer_name')} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <Field label="Product Description" value={form.description} onChange={set('description')} />
+            <Field label="HS Code" value={form.hs_code} onChange={set('hs_code')} placeholder="0000.0000" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+            <Field label="Qty"           type="number" value={form.quantity}      onChange={set('quantity')} />
+            <Field label="Value excl ST" type="number" value={form.value_excl_st} onChange={set('value_excl_st')} />
+            <Field label="Sales Tax"     type="number" value={form.sales_tax}     onChange={set('sales_tax')} />
+            <Field label="Total"         type="number" value={form.total}         onChange={set('total')} />
           </div>
 
-          {/* Row 2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN</label>
-              <input
-                type="text"
-                placeholder="xxxxxxxxx-x"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                           placeholder:text-gray-300 text-gray-700
-                           focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
-              />
+          {msg && (
+            <div className={`text-xs font-medium rounded-lg px-3 py-2 border ${
+              msg.kind === 'verified' ? 'text-green-700 bg-green-50 border-green-100' : 'text-red-700 bg-red-50 border-red-100'
+            }`}>
+              {msg.text}
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>
-              <input
-                type="text"
-                placeholder="xxxxxxxxx-x"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                           placeholder:text-gray-300 text-gray-700
-                           focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] transition-colors"
-              />
-            </div>
-          </div>
+          )}
 
-          {/* Actions row */}
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-1.5 text-xs text-gray-400">
               <HiInformationCircle className="w-4 h-4 flex-shrink-0 text-gray-400" />
-              Data is cross referenced with FRAL central Database
+              Data is cross-referenced with FBR central Database
             </div>
             <div className="flex items-center gap-3">
-              <button className="border border-gray-300 rounded-lg px-6 py-2.5 text-sm font-semibold text-gray-700
-                                 hover:bg-gray-50 transition-colors">
+              <button onClick={handleClear} disabled={busy} className="border border-gray-300 rounded-lg px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60">
                 Clear Form
               </button>
-              <button className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-lg px-7 py-2.5 text-sm font-semibold
-                                 transition-colors">
-                Verify Now
+              <button onClick={handleVerify} disabled={busy} className="bg-[#1e3a5f] hover:bg-[#0f2040] text-white rounded-lg px-7 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60">
+                {busy ? 'Verifying…' : 'Verify Now'}
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
-          <p className="text-sm">Drag &amp; drop your Excel or CSV file here</p>
-          <p className="text-xs mt-1">Supports up to 500 records</p>
+        <div className="flex flex-col gap-4">
+          <div
+            onClick={() => ref.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleBulkFile(f) }}
+            className="border-2 border-dashed border-gray-200 rounded-xl bg-[#fafbfc] hover:border-[#1e3a5f]/40 flex flex-col items-center justify-center py-12 cursor-pointer"
+          >
+            <HiOutlineCloudUpload className="w-9 h-9 text-gray-300 mb-3" />
+            <p className="text-sm font-semibold text-gray-700">Click or drop a CSV here</p>
+            <p className="text-xs mt-1 text-gray-400">Supports up to 500 records. Use the template on the right.</p>
+            <input ref={ref} type="file" accept=".csv" className="hidden"
+                   onChange={(e) => { const f = e.target.files?.[0]; if (f) handleBulkFile(f) }} />
+          </div>
+
+          {bulk.total > 0 && (
+            <div className="bg-gray-50 border border-gray-100 rounded-xl p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-gray-700">{busy ? 'Processing…' : 'Done'}</span>
+                <span className="text-xs text-gray-500">{bulk.done}/{bulk.total} · {bulk.errors} errors</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div className="bg-[#1e3a5f] h-1.5 rounded-full transition-all" style={{ width: `${(bulk.done / bulk.total) * 100}%` }} />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
