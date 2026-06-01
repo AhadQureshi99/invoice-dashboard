@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { HiInformationCircle, HiOutlineCloudUpload } from 'react-icons/hi'
+import { useMemo, useRef, useState } from 'react'
+import { HiInformationCircle, HiOutlineCloudUpload, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { verifyAndRecord } from '../../services/fbr'
 import { logActivity } from '../../services/activity'
 import { parseCSV } from '../../lib/export'
@@ -17,16 +17,22 @@ const initial = {
   buyer_address:  '',
   buyer_reg_type: 'Registered',
   scenario_id:    'SN000',
-  hs_code:        '0000.0000',
-  description:    '',
-  quantity:       1,
-  rate:           '18%',
-  uom:            'Numbers, pieces, units',
-  sales_tax:      0,
-  total:          0,
-  value_excl_st:  0,
-  sale_type:      'Goods at standard rate (default)',
 }
+
+const emptyItem = () => ({
+  description:   '',
+  hs_code:       '0000.0000',
+  quantity:      1,
+  rate:          '18%',
+  uom:           'Numbers, pieces, units',
+  value_excl_st: 0,
+  sales_tax:     0,
+  total:         0,
+  sale_type:     'Goods at standard rate (default)',
+})
+
+const cellClass = `w-full border border-gray-200 rounded-md px-2.5 py-1.5 text-sm placeholder:text-gray-300 text-gray-700
+  focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors`
 
 const Field = ({ label, value, onChange, type = 'text', placeholder = '' }) => (
   <div>
@@ -41,13 +47,27 @@ const Field = ({ label, value, onChange, type = 'text', placeholder = '' }) => (
 const VerificationForm = ({ onResult }) => {
   const [tab, setTab]   = useState('single')
   const [form, setForm] = useState(initial)
+  const [items, setItems] = useState([emptyItem()])
   const [busy, setBusy] = useState(false)
   const [msg,  setMsg]  = useState(null)
   const [bulk, setBulk] = useState({ done: 0, total: 0, errors: 0, results: [] })
   const ref = useRef(null)
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
-  const handleClear = () => { setForm(initial); setMsg(null) }
+
+  const setItem = (idx, k) => (e) => {
+    const value = e.target.value
+    setItems(its => its.map((it, i) => (i === idx ? { ...it, [k]: value } : it)))
+  }
+  const addItem    = () => setItems(its => [...its, emptyItem()])
+  const removeItem = (idx) => setItems(its => (its.length === 1 ? its : its.filter((_, i) => i !== idx)))
+
+  const grandTotal = useMemo(
+    () => items.reduce((s, it) => s + Number(it.total || 0), 0),
+    [items],
+  )
+
+  const handleClear = () => { setForm(initial); setItems([emptyItem()]); setMsg(null) }
 
   const handleVerify = async () => {
     setMsg(null); setBusy(true)
@@ -55,12 +75,12 @@ const VerificationForm = ({ onResult }) => {
       const payload = {
         ...form,
         invoice_ref_no: form.invoice_number,
-        items: [{
-          hs_code: form.hs_code, description: form.description, rate: form.rate, uom: form.uom,
-          quantity: Number(form.quantity), total: Number(form.total),
-          value_excl_st: Number(form.value_excl_st), sales_tax: Number(form.sales_tax),
-          sale_type: form.sale_type,
-        }],
+        items: items.map(it => ({
+          hs_code: it.hs_code, description: it.description, rate: it.rate, uom: it.uom,
+          quantity: Number(it.quantity), total: Number(it.total),
+          value_excl_st: Number(it.value_excl_st), sales_tax: Number(it.sales_tax),
+          sale_type: it.sale_type,
+        })),
       }
       const result = await verifyAndRecord(payload)
       await logActivity({
@@ -154,15 +174,77 @@ const VerificationForm = ({ onResult }) => {
             <Field label="Seller Business Name" value={form.seller_name} onChange={set('seller_name')} />
             <Field label="Buyer Business Name"  value={form.buyer_name}  onChange={set('buyer_name')} />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Field label="Product Description" value={form.description} onChange={set('description')} />
-            <Field label="HS Code" value={form.hs_code} onChange={set('hs_code')} placeholder="0000.0000" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-            <Field label="Qty"           type="number" value={form.quantity}      onChange={set('quantity')} />
-            <Field label="Value excl ST" type="number" value={form.value_excl_st} onChange={set('value_excl_st')} />
-            <Field label="Sales Tax"     type="number" value={form.sales_tax}     onChange={set('sales_tax')} />
-            <Field label="Total"         type="number" value={form.total}         onChange={set('total')} />
+          <div className="border border-gray-100 rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+              <span className="text-xs font-semibold text-gray-700">Products / Line Items ({items.length})</span>
+              <button
+                type="button"
+                onClick={addItem}
+                className="flex items-center gap-1.5 text-xs font-semibold text-[#0e5f4f] hover:text-[#083f33] transition-colors"
+              >
+                <HiOutlinePlus className="w-4 h-4" /> Add Product
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide bg-white border-b border-gray-100">
+                    <th className="px-3 py-2 w-8">#</th>
+                    <th className="px-3 py-2 min-w-[180px]">Product Description</th>
+                    <th className="px-3 py-2 w-28">HS Code</th>
+                    <th className="px-3 py-2 w-20">Qty</th>
+                    <th className="px-3 py-2 w-28">Value excl ST</th>
+                    <th className="px-3 py-2 w-28">Sales Tax</th>
+                    <th className="px-3 py-2 w-28">Total</th>
+                    <th className="px-3 py-2 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((it, idx) => (
+                    <tr key={idx} className="border-b border-gray-50 last:border-0">
+                      <td className="px-3 py-2 text-xs text-gray-400">{idx + 1}</td>
+                      <td className="px-3 py-2">
+                        <input value={it.description} onChange={setItem(idx, 'description')} placeholder="Item name / description" className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input value={it.hs_code} onChange={setItem(idx, 'hs_code')} placeholder="0000.0000" className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input type="number" value={it.quantity} onChange={setItem(idx, 'quantity')} className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input type="number" value={it.value_excl_st} onChange={setItem(idx, 'value_excl_st')} className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input type="number" value={it.sales_tax} onChange={setItem(idx, 'sales_tax')} className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input type="number" value={it.total} onChange={setItem(idx, 'total')} className={cellClass} />
+                      </td>
+                      <td className="px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() => removeItem(idx)}
+                          disabled={items.length === 1}
+                          aria-label="Remove product"
+                          className="text-gray-300 hover:text-red-500 disabled:opacity-40 disabled:hover:text-gray-300 transition-colors"
+                        >
+                          <HiOutlineTrash className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-4 py-2.5 bg-gray-50 border-t border-gray-100">
+              <span className="text-xs text-gray-500">Grand Total</span>
+              <span className="text-sm font-bold text-[#0e5f4f]">
+                PKR {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
 
           {msg && (

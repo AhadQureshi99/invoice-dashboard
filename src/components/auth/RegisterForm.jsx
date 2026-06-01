@@ -1,34 +1,50 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { HiOutlineMail } from 'react-icons/hi'
+import { HiOutlineMail, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 import { useAuth } from '../../lib/AuthContext'
 
-const InputField = ({ id, label, type = 'text', value, onChange, placeholder, icon: Icon }) => (
-  <div>
-    <label
-      htmlFor={id}
-      className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5"
-    >
-      {label}
-    </label>
-    <div className="relative">
-      {Icon && (
-        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-[14px] h-[14px]" />
-      )}
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={`w-full ${Icon ? 'pl-9' : 'pl-4'} pr-4 py-2.5 text-sm border border-gray-200 rounded-lg
-                   placeholder:text-gray-400 text-gray-800
-                   focus:outline-none focus:ring-2 focus:ring-navy-700/20 focus:border-navy-700
-                   transition-colors`}
-      />
+const InputField = ({ id, label, type = 'text', value, onChange, placeholder, icon: Icon }) => {
+  const [show, setShow] = useState(false)
+  const isPassword = type === 'password'
+  const inputType = isPassword ? (show ? 'text' : 'password') : type
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5"
+      >
+        {label}
+      </label>
+      <div className="relative">
+        {Icon && (
+          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-[14px] h-[14px]" />
+        )}
+        <input
+          id={id}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={`w-full ${Icon ? 'pl-9' : 'pl-4'} ${isPassword ? 'pr-10' : 'pr-4'} py-2.5 text-sm border border-gray-200 rounded-lg
+                     placeholder:text-gray-400 text-gray-800
+                     focus:outline-none focus:ring-2 focus:ring-navy-700/20 focus:border-navy-700
+                     transition-colors`}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShow((s) => !s)}
+            aria-label={show ? 'Hide password' : 'Show password'}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            {show ? <HiOutlineEyeOff className="w-[15px] h-[15px]" /> : <HiOutlineEye className="w-[15px] h-[15px]" />}
+          </button>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const RegisterForm = () => {
   const { signUp } = useAuth()

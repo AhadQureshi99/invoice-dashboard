@@ -1,7 +1,31 @@
 import { useEffect, useState } from 'react'
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 import { listSessions, logoutOtherSessions } from '../../services/system'
 import { getPrefs, updatePrefs, changePassword } from '../../services/preferences'
 import Modal from '../common/Modal'
+
+const PasswordField = ({ value, onChange, placeholder }) => {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="relative">
+      <input
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm"
+      />
+      <button
+        type="button"
+        onClick={() => setShow((s) => !s)}
+        aria-label={show ? 'Hide password' : 'Show password'}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        {show ? <HiOutlineEyeOff className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
+      </button>
+    </div>
+  )
+}
 
 const Toggle = ({ on, onChange }) => (
   <button
@@ -136,8 +160,8 @@ const SecurityAccess = () => {
         }
       >
         <div className="flex flex-col gap-3">
-          <input type="password" value={pw.a} onChange={(e) => setPw(s => ({ ...s, a: e.target.value }))} placeholder="New password" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-          <input type="password" value={pw.b} onChange={(e) => setPw(s => ({ ...s, b: e.target.value }))} placeholder="Confirm new password" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+          <PasswordField value={pw.a} onChange={(e) => setPw(s => ({ ...s, a: e.target.value }))} placeholder="New password" />
+          <PasswordField value={pw.b} onChange={(e) => setPw(s => ({ ...s, b: e.target.value }))} placeholder="Confirm new password" />
           {pw.err && <div className="text-xs text-red-600">{pw.err}</div>}
         </div>
       </Modal>
