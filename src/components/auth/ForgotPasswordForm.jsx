@@ -3,6 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff, HiArrowLeft } from 'react-icons/hi'
 import { useAuth } from '../../lib/AuthContext'
 
+// Must match the "Email OTP Length" configured in Supabase
+// (Authentication → Email provider settings). Default is 6.
+const OTP_LENGTH = 6
+
 const inputClass = `w-full pr-4 py-3 text-sm border border-gray-200 rounded-lg
   placeholder:text-gray-400 text-gray-800
   focus:outline-none focus:ring-2 focus:ring-navy-700/20 focus:border-navy-700 transition-colors`
@@ -37,16 +41,16 @@ const PasswordInput = ({ value, onChange, placeholder }) => {
   )
 }
 
-const OtpInput = ({ value, onChange, disabled }) => {
+const OtpInput = ({ value, onChange, disabled, length = OTP_LENGTH }) => {
   const refs = useRef([])
 
   const handleChange = (i) => (e) => {
     const d = e.target.value.replace(/\D/g, '').slice(-1)
     const arr = value.split('')
-    while (arr.length < 6) arr.push('')
+    while (arr.length < length) arr.push('')
     arr[i] = d
-    onChange(arr.join('').slice(0, 6))
-    if (d && i < 5) refs.current[i + 1]?.focus()
+    onChange(arr.join('').slice(0, length))
+    if (d && i < length - 1) refs.current[i + 1]?.focus()
   }
 
   const handleKeyDown = (i) => (e) => {
@@ -55,14 +59,14 @@ const OtpInput = ({ value, onChange, disabled }) => {
 
   const handlePaste = (e) => {
     e.preventDefault()
-    const txt = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6)
+    const txt = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, length)
     onChange(txt)
-    refs.current[Math.min(txt.length, 5)]?.focus()
+    refs.current[Math.min(txt.length, length - 1)]?.focus()
   }
 
   return (
     <div className="flex gap-2 justify-between" onPaste={handlePaste}>
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length }).map((_, i) => (
         <input
           key={i}
           ref={(el) => (refs.current[i] = el)}
@@ -103,13 +107,13 @@ const ForgotPasswordForm = () => {
     setLoading(false)
     if (error) return setMsg({ kind: 'err', text: error.message })
     setStep('reset')
-    setMsg({ kind: 'ok', text: `We sent a 6-digit verification code to ${email}.` })
+    setMsg({ kind: 'ok', text: `We sent a ${OTP_LENGTH}-digit verification code to ${email}.` })
   }
 
   const handleReset = async (e) => {
     e?.preventDefault()
     setMsg(null)
-    if (otp.length !== 6)        return setMsg({ kind: 'err', text: 'Enter the full 6-digit code.' })
+    if (otp.length !== OTP_LENGTH) return setMsg({ kind: 'err', text: `Enter the full ${OTP_LENGTH}-digit code.` })
     if (password.length < 6)     return setMsg({ kind: 'err', text: 'Password must be at least 6 characters.' })
     if (password !== confirm)    return setMsg({ kind: 'err', text: 'Passwords do not match.' })
 
@@ -135,8 +139,8 @@ const ForgotPasswordForm = () => {
       </h2>
       <p className="mt-1.5 text-sm text-gray-500 leading-relaxed">
         {step === 'request'
-          ? 'Enter your registered email and we will send you a 6-digit verification code.'
-          : 'Enter the 6-digit code sent to your email and choose a new password.'}
+          ? `Enter your registered email and we will send you a ${OTP_LENGTH}-digit verification code.`
+          : `Enter the ${OTP_LENGTH}-digit code sent to your email and choose a new password.`}
       </p>
 
       {step === 'request' ? (
@@ -178,7 +182,7 @@ const ForgotPasswordForm = () => {
       ) : (
         <form onSubmit={handleReset} className="mt-8 flex flex-col gap-5">
           <div>
-            <Label>6-Digit Code</Label>
+            <Label>{OTP_LENGTH}-Digit Code</Label>
             <OtpInput value={otp} onChange={setOtp} disabled={loading} />
           </div>
 
