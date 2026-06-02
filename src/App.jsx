@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import {
-  LandingPage, LoginPage, RegisterPage, AboutPage, DashboardPage, VerificationPage,
+  LandingPage, LoginPage, RegisterPage, ForgotPasswordPage, AboutPage, DashboardPage, VerificationPage,
   DraftPage, InvoicesPage, ReportsPage, SettingsPage, InvoiceDetailPage, NotificationsPage,
 } from './imports'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -15,6 +15,7 @@ function App() {
         <Route path="/about"               element={<AboutPage />} />
         <Route path="/login"               element={<LoginPage />} />
         <Route path="/register"            element={<RegisterPage />} />
+        <Route path="/forgot-password"     element={<ForgotPasswordPage />} />
         <Route path="/dashboard"           element={<Protected><DashboardPage /></Protected>} />
         <Route path="/dashboard/verification" element={<Protected><VerificationPage /></Protected>} />
         <Route path="/dashboard/draft"        element={<Protected><DraftPage /></Protected>} />

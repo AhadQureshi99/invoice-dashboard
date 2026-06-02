@@ -8,6 +8,7 @@ export { default as RegisterLeftPanel }  from '../components/auth/RegisterLeftPa
 export { default as RegisterForm }       from '../components/auth/RegisterForm'
 export { default as LoginPage }          from '../pages/LoginPage'
 export { default as RegisterPage }       from '../pages/RegisterPage'
+export { default as ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 export { default as LandingPage }        from '../pages/LandingPage'
 export { default as AboutPage }          from '../pages/AboutPage'
 export { default as DashboardPage }      from '../pages/DashboardPage'

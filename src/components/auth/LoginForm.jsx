@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -51,6 +51,8 @@ const InputField = ({ id, label, type, value, onChange, placeholder, icon: Icon,
 const LoginForm = () => {
   const { signIn }   = useAuth()
   const navigate     = useNavigate()
+  const location     = useLocation()
+  const resetSuccess = location.state?.resetSuccess
   const [email,      setEmail]      = useState('')
   const [password,   setPassword]   = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -74,6 +76,12 @@ const LoginForm = () => {
         Enter your credentials to access your organization dashboard.
       </p>
 
+      {resetSuccess && (
+        <div className="mt-4 text-xs font-medium text-green-700 bg-green-50 border border-green-100 rounded-lg px-3 py-2">
+          Password reset successfully. Please sign in with your new password.
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
 
         <InputField
@@ -95,13 +103,13 @@ const LoginForm = () => {
           placeholder="••••••••"
           icon={HiOutlineLockClosed}
           rightLabel={
-            <button
-              type="button"
+            <Link
+              to="/forgot-password"
               className="text-[11px] font-semibold text-navy-900 hover:text-navy-950
                          uppercase tracking-widest transition-colors"
             >
               Forgot Password?
-            </button>
+            </Link>
           }
         />
 

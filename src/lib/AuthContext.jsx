@@ -80,10 +80,32 @@ export const AuthProvider = ({ children }) => {
     setProfile(null)
   }
 
+  // --- Password recovery via 6-digit email OTP ---
+  // Sends a recovery email containing a 6-digit token ({{ .Token }}).
+  const sendPasswordOtp = async (email) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email)
+    return { data, error }
+  }
+
+  // Verifies the 6-digit code; on success a recovery session is established.
+  const verifyPasswordOtp = async (email, token) => {
+    const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' })
+    return { data, error }
+  }
+
+  // Sets a new password for the user in the active (recovery) session.
+  const updatePassword = async (password) => {
+    const { data, error } = await supabase.auth.updateUser({ password })
+    return { data, error }
+  }
+
   const refreshProfile = () => loadProfile(user?.id)
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{
+      user, profile, loading, signIn, signUp, signOut, refreshProfile,
+      sendPasswordOtp, verifyPasswordOtp, updatePassword,
+    }}>
       {children}
     </AuthContext.Provider>
   )
