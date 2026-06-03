@@ -106,6 +106,12 @@ const InvoiceInfoCard = () => {
         </div>
       </div>
 
+      {profile?.barcode_url && (
+        <div className="flex justify-end border-t border-gray-100 pt-4">
+          <img src={profile.barcode_url} alt="Barcode" className="h-16 object-contain" />
+        </div>
+      )}
+
     </div>
   )
 }

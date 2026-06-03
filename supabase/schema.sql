@@ -449,10 +449,12 @@ drop policy if exists "status read" on public.system_status;
 create policy "status read" on public.system_status for select using (auth.uid() is not null);
 
 -- ============================================================================
--- Company logo — profiles.logo_url + public `logos` storage bucket.
+-- Company branding — profiles.logo_url + profiles.barcode_url + public `logos`
+-- storage bucket (holds both logo and barcode images).
 -- Idempotent: safe to re-run on an existing database.
 -- ============================================================================
-alter table public.profiles add column if not exists logo_url text;
+alter table public.profiles add column if not exists logo_url    text;
+alter table public.profiles add column if not exists barcode_url text;
 
 insert into storage.buckets (id, name, public)
 values ('logos', 'logos', true)

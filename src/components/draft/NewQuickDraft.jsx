@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
 import { logActivity } from '../../services/activity'
+import BrandingAssets from '../common/BrandingAssets'
 
 const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
   placeholder:text-gray-300 text-gray-700
@@ -99,6 +100,10 @@ const NewQuickDraft = ({ onSaved }) => {
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-[#0e5f4f]">New Quick Draft</p>
         <span className="text-[10px] text-gray-400 font-medium">ID: {form.invoice_number}</span>
+      </div>
+
+      <div className="border-b border-gray-100 pb-4">
+        <BrandingAssets title="Invoice Branding — Logo &amp; Barcode" />
       </div>
 
       <div>
