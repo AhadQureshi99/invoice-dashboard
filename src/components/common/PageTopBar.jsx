@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/AuthContext'
 import { useSearch } from '../../lib/SearchContext'
 
-const initials = (s) => (s || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || 'Â·'
+const initials = (s) => (s || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || '·'
 
 const PageTopBar = ({ title, subtitle, lastSync, primaryLabel = 'Verify Invoice', primaryTo = '/dashboard/verification', showSearch = false }) => {
   const { user, profile, signOut } = useAuth()
@@ -56,7 +56,7 @@ const PageTopBar = ({ title, subtitle, lastSync, primaryLabel = 'Verify Invoice'
       <div className="flex-1" />
 
       <div className="flex items-center gap-1.5 cursor-default">
-        <span className="text-lg leading-none">ðŸ‡µðŸ‡°</span>
+        <span className="text-lg leading-none">🇵🇰</span>
         <span className="text-sm font-medium text-gray-600">EN</span>
       </div>
 

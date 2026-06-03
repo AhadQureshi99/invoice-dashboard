@@ -71,7 +71,7 @@ const DraftPage = () => {
             <DraftBottomCards refreshKey={refreshKey} />
 
             <p className="text-[11px] text-gray-400 pb-2">
-              Â© 2026{' '}
+              © 2026{' '}
               <a href="/" className="text-[#0e5f4f] hover:underline">Name</a>
               {' '}All rights reserved.
             </p>
