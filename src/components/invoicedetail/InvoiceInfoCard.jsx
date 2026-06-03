@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getInvoice } from '../../services/invoices'
+import { useAuth } from '../../lib/AuthContext'
 
 const thClass = 'text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left pb-3'
 
 const InvoiceInfoCard = () => {
   const { id } = useParams()
+  const { profile } = useAuth()
   const [inv, setInv]       = useState(null)
   const [loading, setLoad]  = useState(true)
   const [err, setErr]       = useState(null)
@@ -28,10 +30,19 @@ const InvoiceInfoCard = () => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-6">
 
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-base font-bold text-gray-800">Invoice</p>
-          <p className="text-xs text-gray-500 mt-0.5">ID: {inv.invoice_number}</p>
-          {inv.invoice_ref_no && <p className="text-xs text-gray-400">INTERNAL REF: {inv.invoice_ref_no}</p>}
+        <div className="flex items-start gap-3">
+          {profile?.logo_url && (
+            <img
+              src={profile.logo_url}
+              alt="Company logo"
+              className="h-12 w-12 rounded-lg object-contain border border-gray-100 bg-white shrink-0"
+            />
+          )}
+          <div>
+            <p className="text-base font-bold text-gray-800">Invoice</p>
+            <p className="text-xs text-gray-500 mt-0.5">ID: {inv.invoice_number}</p>
+            {inv.invoice_ref_no && <p className="text-xs text-gray-400">INTERNAL REF: {inv.invoice_ref_no}</p>}
+          </div>
         </div>
         <div className="text-right">
           <p className="text-2xl font-black text-[#0e5f4f]">PKR {Number(total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>

@@ -50,6 +50,16 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
   }
 
   const handlePromote = async (d) => {
+    const payloadItems = Array.isArray(d.payload?.items) ? d.payload.items : null
+    const items = payloadItems && payloadItems.length
+      ? payloadItems.map(it => ({
+          description:   it.description,
+          quantity:      Number(it.quantity || 0),
+          value_excl_st: Number(it.subtotal || 0),
+          sales_tax:     Number(it.tax_amount || 0),
+          total:         Number(it.total || 0),
+        }))
+      : [{ description: d.description, quantity: d.quantity, value_excl_st: d.subtotal, sales_tax: d.tax_amount, total: d.total_amount }]
     const inv = await createInvoice({
       invoice_number: d.invoice_number || `INV-${Date.now()}`,
       invoice_date:   d.invoice_date,
@@ -60,7 +70,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
       tax_amount:     d.tax_amount,
       total_amount:   d.total_amount,
       status:         'ready',
-      items: [{ description: d.description, quantity: d.quantity, value_excl_st: d.subtotal, sales_tax: d.tax_amount, total: d.total_amount }],
+      items,
     })
     await deleteDraft(d.id)
     await logActivity({ action: 'Draft → Invoice', subject: inv.invoice_number, status: 'Updated', type: 'updated' })

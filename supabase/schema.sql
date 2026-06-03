@@ -447,3 +447,29 @@ create policy "sessions delete" on public.user_sessions for delete using (auth.u
 -- system_status (read for anyone signed in)
 drop policy if exists "status read" on public.system_status;
 create policy "status read" on public.system_status for select using (auth.uid() is not null);
+
+-- ============================================================================
+-- Company logo — profiles.logo_url + public `logos` storage bucket.
+-- Idempotent: safe to re-run on an existing database.
+-- ============================================================================
+alter table public.profiles add column if not exists logo_url text;
+
+insert into storage.buckets (id, name, public)
+values ('logos', 'logos', true)
+on conflict (id) do nothing;
+
+-- Logos are public to read; each user may only write within their own id folder
+-- (path layout: `<user_id>/logo.<ext>`).
+drop policy if exists "logos public read" on storage.objects;
+drop policy if exists "logos owner write" on storage.objects;
+drop policy if exists "logos owner update" on storage.objects;
+drop policy if exists "logos owner delete" on storage.objects;
+
+create policy "logos public read" on storage.objects
+  for select using (bucket_id = 'logos');
+create policy "logos owner write" on storage.objects
+  for insert with check (bucket_id = 'logos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "logos owner update" on storage.objects
+  for update using (bucket_id = 'logos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "logos owner delete" on storage.objects
+  for delete using (bucket_id = 'logos' and (storage.foldername(name))[1] = auth.uid()::text);
