@@ -3,6 +3,7 @@ import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
 import { logActivity } from '../../services/activity'
 import BrandingAssets from '../common/BrandingAssets'
+import VerifyButton from '../common/VerifyButton'
 
 const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
   placeholder:text-gray-300 text-gray-700
@@ -37,6 +38,39 @@ const NewQuickDraft = ({ onSaved }) => {
     acc.sub += sub; acc.gst += gst; acc.total += total
     return acc
   }, { sub: 0, gst: 0, total: 0 }), [items])
+
+  // Normalized invoice shape used to verify the current draft against FBR.
+  const verifyInput = useMemo(() => ({
+    invoice_number: form.invoice_number,
+    invoice_ref_no: form.invoice_number,
+    invoice_date:   form.invoice_date,
+    seller_ntn:     form.seller_ntn,
+    buyer_ntn:      form.buyer_ntn,
+    items: items.map(it => {
+      const { sub, gst, total } = lineTotals(it)
+      return {
+        description:   (it.description || '').trim(),
+        quantity:      Number(it.quantity),
+        rate:          '18%',
+        hs_code:       '0000.0000',
+        uom:           'Numbers, pieces, units',
+        value_excl_st: sub,
+        sales_tax:     gst,
+        total,
+        sale_type:     'Goods at standard rate (default)',
+      }
+    }),
+  }), [form, items])
+
+  const handleVerified = async (result) => {
+    if (result.error) { setMsg({ kind: 'err', text: result.error }); return }
+    setMsg({
+      kind: result.status === 'verified' ? 'ok' : 'err',
+      text: result.status === 'verified'
+        ? `Verified by FBR in ${(result.durationMs / 1000).toFixed(1)}s`
+        : (result.response?.validationResponse?.error || 'FBR rejected the invoice'),
+    })
+  }
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
   const setItem = (idx, key) => (e) => {
@@ -203,6 +237,12 @@ const NewQuickDraft = ({ onSaved }) => {
           {msg.text}
         </div>
       )}
+
+      <VerifyButton
+        invoice={verifyInput}
+        onVerified={handleVerified}
+        className="w-full flex items-center justify-center gap-1.5 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-60"
+      />
 
       <div className="grid grid-cols-2 gap-3 pt-1">
         <button className="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">

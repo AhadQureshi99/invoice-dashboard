@@ -6,19 +6,45 @@ import LifecycleCard   from '../components/invoicedetail/LifecycleCard'
 import VoidBanner      from '../components/invoicedetail/VoidBanner'
 import InvoiceInfoCard from '../components/invoicedetail/InvoiceInfoCard'
 import PageTopBar      from '../components/common/PageTopBar'
+import VerifyButton    from '../components/common/VerifyButton'
 import { HiOutlineDocumentText, HiOutlineDocumentDownload, HiOutlineDocumentDuplicate } from 'react-icons/hi'
-import { getInvoice, createInvoice } from '../services/invoices'
+import { getInvoice, createInvoice, updateInvoice } from '../services/invoices'
 import { downloadCSV } from '../lib/export'
 
 const InvoiceDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [inv, setInv] = useState(null)
+  const [verifyMsg, setVerifyMsg] = useState(null)
 
   useEffect(() => {
     if (!id) return
     getInvoice(id).then(setInv).catch(() => {})
   }, [id])
+
+  const handleVerified = async (result) => {
+    if (result.error) {
+      setVerifyMsg({ kind: 'invalid', text: result.error })
+      return
+    }
+    const rec = result.record || {}
+    try {
+      await updateInvoice(id, {
+        status:          result.status,
+        fbr_status_code: rec.fbr_status_code || null,
+        fbr_message:     rec.fbr_message || null,
+        fbr_invoice_no:  rec.fbr_invoice_no || null,
+      })
+    } catch (_) { /* status persist is best-effort */ }
+    const fresh = await getInvoice(id).catch(() => null)
+    if (fresh) setInv(fresh)
+    setVerifyMsg({
+      kind: result.status,
+      text: result.status === 'verified'
+        ? `Verified by FBR in ${(result.durationMs / 1000).toFixed(1)}s`
+        : (result.response?.validationResponse?.error || rec.fbr_message || 'FBR rejected the invoice'),
+    })
+  }
 
   const exportExcel = () => {
     if (!inv) return
@@ -86,8 +112,17 @@ const InvoiceDetailPage = () => {
                   <HiOutlineDocumentDuplicate className="w-3.5 h-3.5" />
                   Duplicate
                 </button>
+                {inv && <VerifyButton invoice={inv} onVerified={handleVerified} />}
               </div>
             </div>
+
+            {verifyMsg && (
+              <div className={`text-xs font-medium rounded-lg px-3 py-2 border ${
+                verifyMsg.kind === 'verified' ? 'text-green-700 bg-green-50 border-green-100' : 'text-red-700 bg-red-50 border-red-100'
+              }`}>
+                {verifyMsg.text}
+              </div>
+            )}
 
             <div className="flex flex-col lg:flex-row gap-5 items-stretch">
               <div className="w-full lg:w-64 lg:flex-shrink-0">

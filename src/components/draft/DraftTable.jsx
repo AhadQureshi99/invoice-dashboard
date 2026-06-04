@@ -4,6 +4,44 @@ import { listDrafts, deleteDraft, duplicateDraft, updateDraft } from '../../serv
 import { createInvoice } from '../../services/invoices'
 import { logActivity } from '../../services/activity'
 import { useSearch } from '../../lib/SearchContext'
+import VerifyButton from '../common/VerifyButton'
+
+// Map a draft row to the normalized invoice shape the FBR verifier expects.
+const draftToVerifyInput = (d) => {
+  const payloadItems = Array.isArray(d.payload?.items) ? d.payload.items : null
+  const items = payloadItems && payloadItems.length
+    ? payloadItems.map(it => ({
+        description:   it.description,
+        quantity:      Number(it.quantity || 0),
+        rate:          '18%',
+        hs_code:       '0000.0000',
+        uom:           'Numbers, pieces, units',
+        value_excl_st: Number(it.subtotal || 0),
+        sales_tax:     Number(it.tax_amount || 0),
+        total:         Number(it.total || 0),
+        sale_type:     'Goods at standard rate (default)',
+      }))
+    : [{
+        description:   d.description,
+        quantity:      Number(d.quantity || 0),
+        rate:          '18%',
+        hs_code:       '0000.0000',
+        uom:           'Numbers, pieces, units',
+        value_excl_st: Number(d.subtotal || 0),
+        sales_tax:     Number(d.tax_amount || 0),
+        total:         Number(d.total_amount || 0),
+        sale_type:     'Goods at standard rate (default)',
+      }]
+  return {
+    invoice_number: d.invoice_number,
+    invoice_ref_no: d.invoice_number,
+    invoice_date:   d.invoice_date,
+    seller_ntn:     d.seller_ntn,
+    buyer_ntn:      d.buyer_ntn,
+    buyer_name:     d.buyer_name,
+    items,
+  }
+}
 
 const thClass = 'text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left pb-3'
 const tdClass = 'text-sm text-gray-600 py-3.5'
@@ -13,6 +51,18 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
+  const [verifyMsg, setVerifyMsg] = useState(null)
+
+  const handleRowVerified = (row, result) => {
+    const name = row.invoice_number || 'Draft'
+    if (result.error) { setVerifyMsg({ kind: 'invalid', text: `${name}: ${result.error}` }); return }
+    setVerifyMsg({
+      kind: result.status,
+      text: result.status === 'verified'
+        ? `${name} verified by FBR`
+        : `${name}: ${result.response?.validationResponse?.error || 'FBR rejected the invoice'}`,
+    })
+  }
 
   const load = () => {
     setLoading(true)
@@ -99,6 +149,14 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
         <span className="text-xs font-semibold text-gray-500 tracking-wide">{rows.length} ITEMS</span>
       </div>
 
+      {verifyMsg && (
+        <div className={`mx-6 mb-2 text-xs font-medium rounded-lg px-3 py-2 border ${
+          verifyMsg.kind === 'verified' ? 'text-green-700 bg-green-50 border-green-100' : 'text-red-700 bg-red-50 border-red-100'
+        }`}>
+          {verifyMsg.text}
+        </div>
+      )}
+
       <div className="px-6 pb-5 overflow-x-auto">
         <table className="w-full min-w-[560px]">
           <thead>
@@ -140,6 +198,12 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
                       </>
                     ) : (
                       <>
+                        <VerifyButton
+                          invoice={draftToVerifyInput(row)}
+                          onVerified={(r) => handleRowVerified(row, r)}
+                          label="Verify"
+                          className="flex items-center gap-1 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-lg px-2 py-1 text-[11px] font-semibold transition-colors disabled:opacity-60 mr-1"
+                        />
                         <button onClick={() => handlePromote(row)} className="p-1 text-gray-400 hover:text-green-600 transition-colors" title="Convert to invoice">
                           <HiOutlineCheckCircle className="w-4 h-4" />
                         </button>
