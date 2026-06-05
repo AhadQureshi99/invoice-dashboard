@@ -1,7 +1,9 @@
-// Supabase Edge Function: FBR sandbox proxy.
+// Supabase Edge Function: FBR proxy (sandbox or production).
 // Deploy with: supabase functions deploy fbr-proxy --no-verify-jwt
-// Set the secret: supabase secrets set FBR_TOKEN=d9defe7b-a7af-355f-9b8c-95b4e0d487d9
-// Optional:     supabase secrets set FBR_BASE=https://gw.fbr.gov.pk
+// Set the secret: supabase secrets set FBR_TOKEN=<your-fbr-token>
+// Optional:      supabase secrets set FBR_BASE=https://gw.fbr.gov.pk
+// NOTE: the production/sandbox endpoint (…postinvoicedata vs …_sb) is chosen
+// by the frontend via VITE_FBR_MODE and passed in as `path`.
 
 // deno-lint-ignore-file no-explicit-any
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'

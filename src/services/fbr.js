@@ -5,8 +5,14 @@ const TOKEN     = import.meta.env.VITE_FBR_TOKEN
 const FBR_BASE  = import.meta.env.VITE_FBR_BASE_URL || 'https://gw.fbr.gov.pk'
 const IS_DEV    = import.meta.env.DEV
 
-const POST_PATH = '/di_data/v1/di/postinvoicedata_sb'
-const GET_PATH  = '/di_data/v1/di/getinvoicedata_sb'
+// Switch between FBR sandbox (testing) and production by setting
+// VITE_FBR_MODE=production in the environment. Sandbox endpoints use the
+// "_sb" suffix; production endpoints drop it. Defaults to sandbox so a
+// missing/incorrect production token can never accidentally hit live FBR.
+const IS_PRODUCTION = import.meta.env.VITE_FBR_MODE === 'production'
+const SUFFIX    = IS_PRODUCTION ? '' : '_sb'
+const POST_PATH = `/di_data/v1/di/postinvoicedata${SUFFIX}`
+const GET_PATH  = `/di_data/v1/di/getinvoicedata${SUFFIX}`
 
 function buildUrl(path) {
   // In dev, route through Vite proxy to avoid CORS.
