@@ -7,8 +7,9 @@ import VoidBanner      from '../components/invoicedetail/VoidBanner'
 import InvoiceInfoCard from '../components/invoicedetail/InvoiceInfoCard'
 import PageTopBar      from '../components/common/PageTopBar'
 import VerifyButton    from '../components/common/VerifyButton'
-import { HiOutlineDocumentText, HiOutlineDocumentDownload, HiOutlineDocumentDuplicate } from 'react-icons/hi'
-import { getInvoice, createInvoice, updateInvoice } from '../services/invoices'
+import { HiOutlineDocumentText, HiOutlineDocumentDownload, HiOutlineDocumentDuplicate, HiOutlineTrash } from 'react-icons/hi'
+import { getInvoice, createInvoice, updateInvoice, deleteInvoice } from '../services/invoices'
+import { logActivity } from '../services/activity'
 import { downloadCSV } from '../lib/export'
 
 const InvoiceDetailPage = () => {
@@ -62,6 +63,14 @@ const InvoiceDetailPage = () => {
     )
   }
 
+  const remove = async () => {
+    if (!inv) return
+    if (!confirm(`Delete invoice ${inv.invoice_number}? This cannot be undone.`)) return
+    await deleteInvoice(inv.id)
+    await logActivity({ action: 'Invoice Deleted', subject: inv.invoice_number, status: 'Deleted', type: 'deleted' })
+    navigate('/dashboard/invoices')
+  }
+
   const duplicate = async () => {
     if (!inv) return
     const items = (inv.items || []).map(({ id: _ignored, invoice_id, created_at, ...rest }) => rest)
@@ -113,6 +122,10 @@ const InvoiceDetailPage = () => {
                   Duplicate
                 </button>
                 {inv && <VerifyButton invoice={inv} onVerified={handleVerified} />}
+                <button onClick={remove} className="flex items-center gap-1.5 border border-red-200 bg-white rounded-xl px-3.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors shadow-sm">
+                  <HiOutlineTrash className="w-3.5 h-3.5" />
+                  Delete
+                </button>
               </div>
             </div>
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { HiOutlineFilter, HiOutlineCheck } from 'react-icons/hi'
-import { listInvoices, updateInvoice } from '../../services/invoices'
+import { HiOutlineFilter, HiOutlineCheck, HiOutlineTrash } from 'react-icons/hi'
+import { listInvoices, updateInvoice, deleteInvoice } from '../../services/invoices'
+import { logActivity } from '../../services/activity'
 import { useSearch } from '../../lib/SearchContext'
 import { downloadCSV } from '../../lib/export'
 
@@ -64,6 +65,14 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
     } finally { setBusy(false) }
   }
 
+  const handleDelete = async (row) => {
+    if (!confirm(`Delete invoice ${row.invoice_number}? This cannot be undone.`)) return
+    await deleteInvoice(row.id)
+    await logActivity({ action: 'Invoice Deleted', subject: row.invoice_number, status: 'Deleted', type: 'deleted' })
+    load()
+    onChange?.()
+  }
+
   const exportCSV = () => {
     const flat = rows.map(r => ({
       invoice_number: r.invoice_number,
@@ -120,9 +129,15 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
                 <td className={tdClass}>{Number(row.total_amount || 0).toLocaleString()}</td>
                 <td className={tdClass}><StatusBadge status={row.status} /></td>
                 <td className={tdClass}>
-                  <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-semibold text-gray-500 hover:text-[#0e5f4f] transition-colors">
-                    View
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Link to={`/dashboard/invoices/${row.id}`} className="text-xs font-semibold text-gray-500 hover:text-[#0e5f4f] transition-colors">
+                      View
+                    </Link>
+                    <button onClick={() => handleDelete(row)} className="flex items-center gap-1 text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors" title="Delete invoice">
+                      <HiOutlineTrash className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
