@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 import { getInvoice } from '../../services/invoices'
 import { useAuth } from '../../lib/AuthContext'
 
@@ -105,6 +106,26 @@ const InvoiceInfoCard = () => {
           </div>
         </div>
       </div>
+
+      {inv.fbr_invoice_no && (
+        <div className="border-t border-gray-100 pt-4 flex items-center gap-4">
+          <div className="shrink-0 border border-gray-200 rounded-lg p-1.5 bg-white">
+            <QRCodeSVG value={inv.fbr_invoice_no} size={88} level="M" />
+          </div>
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#0e5f4f] uppercase tracking-wide">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+              </svg>
+              Integrated with FBR Digital Invoicing
+            </span>
+            <p className="text-xs font-bold text-gray-800 break-all">FBR Invoice #: {inv.fbr_invoice_no}</p>
+            <p className="text-[10px] text-gray-400 leading-snug">
+              Verify this invoice through the FBR Tax Asaan mobile app or by scanning the QR code.
+            </p>
+          </div>
+        </div>
+      )}
 
       {profile?.barcode_url && (
         <div className="flex justify-end border-t border-gray-100 pt-4">
