@@ -79,6 +79,24 @@ export async function getInvoice(query = {}) {
 }
 
 /**
+ * Ask FBR whether a registration number is "Registered" or "Unregistered".
+ * FBR rejects an invoice (errorCode 0053) when the buyerRegistrationType we
+ * send disagrees with the buyer's actual profile, so we look it up instead of
+ * guessing. Returns 'Registered' | 'Unregistered' | null (lookup failed).
+ */
+export async function getRegistrationType(ntn) {
+  const digits = normalizeNTN(ntn)
+  if (!digits) return 'Unregistered'   // no buyer id => treat as walk-in/unregistered
+  try {
+    const data = await call('POST', '/dist/v1/Get_Reg_Type', { Registration_No: digits })
+    const type = data?.REGISTRATION_TYPE || data?.registration_type
+    return type === 'Registered' || type === 'Unregistered' ? type : null
+  } catch (_) {
+    return null
+  }
+}
+
+/**
  * FBR accepts a seller/buyer registration number as raw digits only:
  * a 7-digit NTN or a 13-digit CNIC. Strip any dashes/spaces the user typed
  * (e.g. "1234567-8") so a formatting slip can't trigger FBR's
@@ -158,7 +176,14 @@ export function buildPayload(input) {
  * Returns { ok, status, response, durationMs }.
  */
 export async function verifyAndRecord(input) {
-  const payload = buildPayload(input)
+  // Auto-detect the buyer's registration type from FBR (avoids errorCode 0053
+  // "Provided Registration type does not match with Buyer's profile"). Falls
+  // back to any explicit value, then to a safe lookup default.
+  let buyerRegType = input.buyer_reg_type
+  if (!buyerRegType) {
+    buyerRegType = (await getRegistrationType(input.buyer_ntn)) || 'Unregistered'
+  }
+  const payload = buildPayload({ ...input, buyer_reg_type: buyerRegType })
   const started = Date.now()
   let response, ok = true, errorMsg = null
   try {
