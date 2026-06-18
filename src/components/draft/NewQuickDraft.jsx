@@ -148,11 +148,11 @@ const NewQuickDraft = ({ onSaved }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN</label>
-          <input type="text" value={form.seller_ntn} onChange={set('seller_ntn')} placeholder="xxxxxxx-x" className={inputClass} />
+          <input type="text" value={form.seller_ntn} onChange={set('seller_ntn')} placeholder="7-digit NTN or 13-digit CNIC" className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>
-          <input type="text" value={form.buyer_ntn} onChange={set('buyer_ntn')} placeholder="xxxxxxx-x" className={inputClass} />
+          <input type="text" value={form.buyer_ntn} onChange={set('buyer_ntn')} placeholder="7-digit NTN or 13-digit CNIC" className={inputClass} />
         </div>
       </div>
 

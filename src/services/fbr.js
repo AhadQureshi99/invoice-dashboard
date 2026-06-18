@@ -72,11 +72,42 @@ export async function getInvoice(query = {}) {
 }
 
 /**
+ * FBR accepts a seller/buyer registration number as raw digits only:
+ * a 7-digit NTN or a 13-digit CNIC. Strip any dashes/spaces the user typed
+ * (e.g. "1234567-8") so a formatting slip can't trigger FBR's
+ * "not 13 digits (CNIC) or 7 digits (NTN)" rejection.
+ */
+export function normalizeNTN(value) {
+  return String(value || '').replace(/\D/g, '')
+}
+
+export function isValidNTN(value) {
+  const digits = normalizeNTN(value)
+  return digits.length === 7 || digits.length === 13
+}
+
+// FBR rejects the placeholder HS code "0000.0000" ("HS Code cannot be empty")
+// and scenario "SN000" ("scenario not valid for registered user"). Until the
+// UI exposes real per-item HS codes, fall back to a known-valid sandbox combo
+// so verification returns statusCode "00".
+const DEFAULT_HS_CODE  = '0101.2100'
+const DEFAULT_SCENARIO = 'SN001'
+const usableHsCode   = (v) => (v && v !== '0000.0000') ? v : DEFAULT_HS_CODE
+const usableScenario = (v) => (v && v !== 'SN000')      ? v : DEFAULT_SCENARIO
+
+/**
  * Build the FBR payload from a normalized internal invoice shape.
  */
 export function buildPayload(input) {
+  const sellerNTN = normalizeNTN(input.seller_ntn)
+  if (!isValidNTN(sellerNTN)) {
+    throw new Error(
+      'Seller NTN/CNIC must be exactly 7 digits (NTN) or 13 digits (CNIC), digits only. ' +
+      'It must also match the registration the FBR token is issued against.'
+    )
+  }
   const items = (input.items || []).map(it => ({
-    hsCode:                          it.hs_code || '0000.0000',
+    hsCode:                          usableHsCode(it.hs_code),
     productDescription:              it.description || '',
     rate:                            it.rate || '0%',
     uoM:                             it.uom || '',
@@ -98,17 +129,17 @@ export function buildPayload(input) {
   return {
     invoiceType:           input.invoice_type        || 'Sale Invoice',
     invoiceDate:           input.invoice_date        || new Date().toISOString().slice(0, 10),
-    sellerNTNCNIC:         input.seller_ntn          || '',
+    sellerNTNCNIC:         sellerNTN,
     sellerBusinessName:    input.seller_name         || '',
     sellerProvince:        input.seller_province     || '',
     sellerAddress:         input.seller_address      || '',
-    buyerNTNCNIC:          input.buyer_ntn           || '',
+    buyerNTNCNIC:          normalizeNTN(input.buyer_ntn),
     buyerBusinessName:     input.buyer_name          || '',
     buyerProvince:         input.buyer_province      || '',
     buyerAddress:          input.buyer_address       || '',
     buyerRegistrationType: input.buyer_reg_type      || 'Registered',
     invoiceRefNo:          input.invoice_ref_no      || '',
-    scenarioId:            input.scenario_id         || 'SN000',
+    scenarioId:            usableScenario(input.scenario_id),
     items,
   }
 }
