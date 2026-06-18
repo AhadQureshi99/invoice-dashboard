@@ -1,0 +1,7 @@
+project_id = "jsgtdvyfjnastaewkqvu"
+
+# The fbr-proxy is a public relay invoked with the anon key from the browser;
+# it has always run without JWT verification. Declaring it here lets us deploy
+# without the --no-verify-jwt CLI flag while preserving that existing setting.
+[functions.fbr-proxy]
+verify_jwt = false

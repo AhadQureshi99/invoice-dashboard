@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineDocumentDuplicate, HiOutlineCheckCircle } from 'react-icons/hi'
 import { listDrafts, deleteDraft, duplicateDraft, updateDraft } from '../../services/drafts'
 import { createInvoice } from '../../services/invoices'
+import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import { useSearch } from '../../lib/SearchContext'
 import VerifyButton from '../common/VerifyButton'
 
 // Map a draft row to the normalized invoice shape the FBR verifier expects.
-const draftToVerifyInput = (d) => {
+// `seller` (resolved from the draft's seller_id) supplies the company's own FBR
+// token + registration so each invoice files under the correct seller.
+const draftToVerifyInput = (d, seller) => {
   const payloadItems = Array.isArray(d.payload?.items) ? d.payload.items : null
   const items = payloadItems && payloadItems.length
     ? payloadItems.map(it => ({
@@ -31,10 +34,14 @@ const draftToVerifyInput = (d) => {
         sale_type:     'Goods at standard rate (default)',
       }]
   return {
-    invoice_number: d.invoice_number,
-    invoice_ref_no: d.invoice_number,
-    invoice_date:   d.invoice_date,
-    seller_ntn:     d.seller_ntn,
+    invoice_number:  d.invoice_number,
+    invoice_ref_no:  d.invoice_number,
+    invoice_date:    d.invoice_date,
+    seller_ntn:      seller?.ntn || d.seller_ntn,
+    seller_name:     seller?.company_name || '',
+    seller_province: seller?.province || '',
+    seller_address:  seller?.address || '',
+    fbr_token:       seller?.fbr_token || '',
     buyer_ntn:      d.buyer_ntn,
     buyer_name:     d.buyer_name,
     items,
@@ -50,6 +57,11 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
   const [verifyMsg, setVerifyMsg] = useState(null)
+  const [sellers, setSellers] = useState([])
+
+  useEffect(() => { listSellers().then(setSellers).catch(() => {}) }, [refreshKey])
+  // Resolve a draft's seller: explicit seller_id, else the default company.
+  const sellerFor = (d) => sellers.find(s => s.id === d.seller_id) || sellers.find(s => s.is_default) || sellers[0] || null
 
   const handleRowVerified = (row, result) => {
     const name = row.invoice_number || 'Draft'
@@ -197,7 +209,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
                     ) : (
                       <>
                         <VerifyButton
-                          invoice={draftToVerifyInput(row)}
+                          invoice={draftToVerifyInput(row, sellerFor(row))}
                           onVerified={(r) => handleRowVerified(row, r)}
                           label="Verify"
                           className="flex items-center gap-1 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-lg px-2 py-1 text-[11px] font-semibold transition-colors disabled:opacity-60 mr-1"

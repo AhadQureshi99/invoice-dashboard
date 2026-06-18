@@ -21,14 +21,17 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    const { method = 'POST', path = '/di_data/v1/di/postinvoicedata_sb', payload } = await req.json()
+    // `token` lets each seller file with their own FBR token (multi-company).
+    // Falls back to the FBR_TOKEN secret when no per-seller token is supplied.
+    const { method = 'POST', path = '/di_data/v1/di/postinvoicedata_sb', payload, token } = await req.json()
+    const authToken = token || FBR_TOKEN
 
     const url = `${FBR_BASE}${path}`
     const res = await fetch(url, {
       method,
       headers: {
         'Content-Type':  'application/json',
-        'Authorization': `Bearer ${FBR_TOKEN}`,
+        'Authorization': `Bearer ${authToken}`,
       },
       body: method === 'GET' ? undefined : JSON.stringify(payload || {}),
     })

@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
-import { SELLER_NTN } from '../../services/fbr'
+import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import BrandingAssets from '../common/BrandingAssets'
 import VerifyButton from '../common/VerifyButton'
@@ -28,12 +28,24 @@ const NewQuickDraft = ({ onSaved }) => {
   const [form, setForm] = useState({
     invoice_number: draftNumber(),
     invoice_date:   todayISO(),
-    seller_ntn:     SELLER_NTN,
     buyer_ntn:      '',
   })
   const [items, setItems] = useState([blankItem()])
+  const [sellers, setSellers]       = useState([])
+  const [sellerId, setSellerId]     = useState('')
   const [busy, setBusy] = useState(false)
   const [msg,  setMsg]  = useState(null)
+
+  // Load the user's companies; preselect the default (or first) one.
+  useEffect(() => {
+    listSellers().then(list => {
+      setSellers(list)
+      const def = list.find(s => s.is_default) || list[0]
+      if (def) setSellerId(def.id)
+    }).catch(() => {})
+  }, [])
+
+  const seller = useMemo(() => sellers.find(s => s.id === sellerId) || null, [sellers, sellerId])
 
   const totals = useMemo(() => items.reduce((acc, it) => {
     const { sub, gst, total } = lineTotals(it)
@@ -46,7 +58,11 @@ const NewQuickDraft = ({ onSaved }) => {
     invoice_number: form.invoice_number,
     invoice_ref_no: form.invoice_number,
     invoice_date:   form.invoice_date,
-    seller_ntn:     form.seller_ntn,
+    seller_ntn:     seller?.ntn || '',
+    seller_name:    seller?.company_name || '',
+    seller_province: seller?.province || '',
+    seller_address: seller?.address || '',
+    fbr_token:      seller?.fbr_token || '',
     buyer_ntn:      form.buyer_ntn,
     items: items.map(it => {
       const { sub, gst, total } = lineTotals(it)
@@ -62,7 +78,7 @@ const NewQuickDraft = ({ onSaved }) => {
         sale_type:     'Goods at standard rate (default)',
       }
     }),
-  }), [form, items])
+  }), [form, items, seller])
 
   const handleVerified = async (result) => {
     if (result.error) { setMsg({ kind: 'err', text: result.error }); return }
@@ -109,7 +125,8 @@ const NewQuickDraft = ({ onSaved }) => {
       const row = await createDraft({
         invoice_number: form.invoice_number,
         invoice_date:   form.invoice_date,
-        seller_ntn:     form.seller_ntn,
+        seller_id:      seller?.id || null,
+        seller_ntn:     seller?.ntn || '',
         buyer_ntn:      form.buyer_ntn,
         description:    summary,
         quantity:       cleanItems.reduce((s, it) => s + it.quantity, 0),
@@ -144,14 +161,24 @@ const NewQuickDraft = ({ onSaved }) => {
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice Date</label>
-        <input type="date" value={form.invoice_date} onChange={set('invoice_date')} className={inputClass} />
+        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller Company</label>
+        {sellers.length === 0 ? (
+          <a href="/dashboard/settings" className="block border border-dashed border-amber-300 bg-amber-50 rounded-lg px-3.5 py-2.5 text-xs text-amber-700 hover:bg-amber-100 transition-colors">
+            No company added yet — add one with its FBR token in Settings →
+          </a>
+        ) : (
+          <select value={sellerId} onChange={(e) => setSellerId(e.target.value)} className={inputClass}>
+            {sellers.map(s => (
+              <option key={s.id} value={s.id}>{s.company_name} — {s.ntn}{s.is_default ? ' (default)' : ''}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN <span className="text-gray-400 font-normal">(registered — locked)</span></label>
-          <input type="text" value={form.seller_ntn} readOnly title="Fixed to the NTN your FBR token is registered against" className={`${inputClass} bg-gray-50 text-gray-500 cursor-not-allowed`} />
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice Date</label>
+          <input type="date" value={form.invoice_date} onChange={set('invoice_date')} className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>

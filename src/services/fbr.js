@@ -28,12 +28,12 @@ function buildUrl(path) {
   return `${FBR_BASE}${path}`
 }
 
-async function callDirect(method, path, body) {
+async function callDirect(method, path, body, token) {
   const res = await fetch(buildUrl(path), {
     method,
     headers: {
       'Content-Type':  'application/json',
-      'Authorization': `Bearer ${TOKEN}`,
+      'Authorization': `Bearer ${token || TOKEN}`,
     },
     body: body ? JSON.stringify(body) : undefined,
   })
@@ -47,35 +47,37 @@ async function callDirect(method, path, body) {
   return data
 }
 
-async function callViaEdge(method, path, body) {
+async function callViaEdge(method, path, body, token) {
   const { data, error } = await supabase.functions.invoke('fbr-proxy', {
-    body: { method, path, payload: body },
+    body: { method, path, payload: body, token },
   })
   if (error) throw error
   if (data?.error) throw new Error(data.error)
   return data
 }
 
-async function call(method, path, body) {
+// `token` (optional) is the chosen seller's own FBR token for multi-company
+// filing; when omitted the edge function / direct call uses the default token.
+async function call(method, path, body, token) {
   // Try edge function first in prod, fall back to direct fetch (works in dev via proxy)
   if (!IS_DEV) {
-    try { return await callViaEdge(method, path, body) }
+    try { return await callViaEdge(method, path, body, token) }
     catch (_) { /* fall through to direct */ }
   }
-  return callDirect(method, path, body)
+  return callDirect(method, path, body, token)
 }
 
 /**
  * POST invoice to FBR sandbox for verification.
  * @param {object} invoice — payload matching FBR sandbox schema
  */
-export async function postInvoice(invoice) {
-  return call('POST', POST_PATH, invoice)
+export async function postInvoice(invoice, token) {
+  return call('POST', POST_PATH, invoice, token)
 }
 
-export async function getInvoice(query = {}) {
+export async function getInvoice(query = {}, token) {
   const qs = new URLSearchParams(query).toString()
-  return call('GET', `${GET_PATH}${qs ? `?${qs}` : ''}`)
+  return call('GET', `${GET_PATH}${qs ? `?${qs}` : ''}`, undefined, token)
 }
 
 /**
@@ -84,11 +86,11 @@ export async function getInvoice(query = {}) {
  * send disagrees with the buyer's actual profile, so we look it up instead of
  * guessing. Returns 'Registered' | 'Unregistered' | null (lookup failed).
  */
-export async function getRegistrationType(ntn) {
+export async function getRegistrationType(ntn, token) {
   const digits = normalizeNTN(ntn)
   if (!digits) return 'Unregistered'   // no buyer id => treat as walk-in/unregistered
   try {
-    const data = await call('POST', '/dist/v1/Get_Reg_Type', { Registration_No: digits })
+    const data = await call('POST', '/dist/v1/Get_Reg_Type', { Registration_No: digits }, token)
     const type = data?.REGISTRATION_TYPE || data?.registration_type
     return type === 'Registered' || type === 'Unregistered' ? type : null
   } catch (_) {
@@ -101,11 +103,11 @@ export async function getRegistrationType(ntn) {
  * (errorCode 0099) when the UoM doesn't match the HS code, so we fetch the
  * allowed UoM instead of guessing. Returns the UoM string or null.
  */
-export async function getUoMForHsCode(hsCode) {
+export async function getUoMForHsCode(hsCode, token) {
   const hs = (hsCode || '').trim()
   if (!hs) return null
   try {
-    const data = await call('GET', `/pdi/v2/HS_UOM?hs_code=${encodeURIComponent(hs)}&annexure_id=3`)
+    const data = await call('GET', `/pdi/v2/HS_UOM?hs_code=${encodeURIComponent(hs)}&annexure_id=3`, undefined, token)
     const list = Array.isArray(data) ? data : []
     return list[0]?.description || null
   } catch (_) {
@@ -141,13 +143,14 @@ const usableScenario = (v) => (v && v !== 'SN000')      ? v : DEFAULT_SCENARIO
  * Build the FBR payload from a normalized internal invoice shape.
  */
 export function buildPayload(input) {
-  // Seller is fixed to the token's registered NTN — never taken from input —
-  // so an invoice can never be rejected for a mismatched/invalid seller.
-  const sellerNTN = SELLER_NTN
+  // The seller NTN must match the token being used. For multi-company filing
+  // it comes from the chosen seller (input.seller_ntn); otherwise it falls back
+  // to the single-tenant default. Either way it must be a valid 7/13-digit id.
+  const sellerNTN = normalizeNTN(input.seller_ntn) || SELLER_NTN
   if (!isValidNTN(sellerNTN)) {
     throw new Error(
-      `Configured seller NTN "${sellerNTN}" is invalid — set VITE_FBR_SELLER_NTN ` +
-      'to the 7-digit NTN or 13-digit CNIC the FBR token is registered against.'
+      `Seller NTN "${sellerNTN}" is invalid — it must be a 7-digit NTN or ` +
+      '13-digit CNIC that matches the FBR token used for this seller.'
     )
   }
   const items = (input.items || []).map(it => ({
@@ -193,12 +196,16 @@ export function buildPayload(input) {
  * Returns { ok, status, response, durationMs }.
  */
 export async function verifyAndRecord(input) {
+  // The chosen seller's own FBR token (multi-company). When absent, calls use
+  // the default token, preserving single-tenant behaviour.
+  const token = input.fbr_token || undefined
+
   // Auto-detect the buyer's registration type from FBR (avoids errorCode 0053
   // "Provided Registration type does not match with Buyer's profile"). Falls
   // back to any explicit value, then to a safe lookup default.
   let buyerRegType = input.buyer_reg_type
   if (!buyerRegType) {
-    buyerRegType = (await getRegistrationType(input.buyer_ntn)) || 'Unregistered'
+    buyerRegType = (await getRegistrationType(input.buyer_ntn, token)) || 'Unregistered'
   }
 
   // Resolve the valid UoM for each item's HS code (avoids errorCode 0099
@@ -206,7 +213,7 @@ export async function verifyAndRecord(input) {
   // explicit UoM; otherwise ask FBR what's allowed for that HS code.
   const items = await Promise.all((input.items || []).map(async (it) => {
     if (it.uom) return it
-    const uom = await getUoMForHsCode(usableHsCode(it.hs_code))
+    const uom = await getUoMForHsCode(usableHsCode(it.hs_code), token)
     return uom ? { ...it, uom } : it
   }))
 
@@ -214,7 +221,7 @@ export async function verifyAndRecord(input) {
   const started = Date.now()
   let response, ok = true, errorMsg = null
   try {
-    response = await postInvoice(payload)
+    response = await postInvoice(payload, token)
   } catch (err) {
     ok = false
     errorMsg = err.message
