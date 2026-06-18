@@ -114,9 +114,28 @@ create table if not exists public.invoice_items (
 create index if not exists invoice_items_invoice_id_idx on public.invoice_items(invoice_id);
 
 -- ── Drafts ────────────────────────────────────────────────────────────────
+-- One row per seller company a user files for, with that company's own FBR
+-- token. An FBR token is bound to a single seller NTN, so multi-company
+-- support means storing one token per seller (entered from FBR IRIS).
+create table if not exists public.sellers (
+  id            uuid          primary key default uuid_generate_v4(),
+  user_id       uuid          not null references auth.users(id) on delete cascade,
+  company_name  text          not null,
+  ntn           text          not null,
+  fbr_token     text          not null,
+  fbr_mode      text          not null default 'production',
+  province      text          default '',
+  address       text          default '',
+  is_default    boolean       not null default false,
+  created_at    timestamptz   default now(),
+  updated_at    timestamptz   default now()
+);
+create index if not exists sellers_user_id_idx on public.sellers(user_id);
+
 create table if not exists public.drafts (
   id              uuid        primary key default uuid_generate_v4(),
   user_id         uuid        references auth.users(id) on delete cascade,
+  seller_id       uuid        references public.sellers(id) on delete set null,
   invoice_number  text,
   invoice_date    date,
   seller_ntn      text,
@@ -275,6 +294,8 @@ drop trigger if exists invoices_touch       on public.invoices;
 create trigger invoices_touch       before update on public.invoices       for each row execute function public.touch_updated_at();
 drop trigger if exists drafts_touch         on public.drafts;
 create trigger drafts_touch         before update on public.drafts         for each row execute function public.touch_updated_at();
+drop trigger if exists sellers_touch        on public.sellers;
+create trigger sellers_touch        before update on public.sellers        for each row execute function public.touch_updated_at();
 drop trigger if exists team_members_touch   on public.team_members;
 create trigger team_members_touch   before update on public.team_members   for each row execute function public.touch_updated_at();
 drop trigger if exists prefs_touch          on public.user_preferences;
@@ -321,6 +342,7 @@ alter table public.profiles         enable row level security;
 alter table public.invoices         enable row level security;
 alter table public.invoice_items    enable row level security;
 alter table public.drafts           enable row level security;
+alter table public.sellers          enable row level security;
 alter table public.verifications    enable row level security;
 alter table public.notifications    enable row level security;
 alter table public.activity_log     enable row level security;
@@ -375,6 +397,16 @@ create policy "drafts read"   on public.drafts for select using (auth.uid() = us
 create policy "drafts insert" on public.drafts for insert with check (auth.uid() = user_id);
 create policy "drafts update" on public.drafts for update using (auth.uid() = user_id);
 create policy "drafts delete" on public.drafts for delete using (auth.uid() = user_id);
+
+-- sellers
+drop policy if exists "sellers read"   on public.sellers;
+drop policy if exists "sellers insert" on public.sellers;
+drop policy if exists "sellers update" on public.sellers;
+drop policy if exists "sellers delete" on public.sellers;
+create policy "sellers read"   on public.sellers for select using (auth.uid() = user_id);
+create policy "sellers insert" on public.sellers for insert with check (auth.uid() = user_id);
+create policy "sellers update" on public.sellers for update using (auth.uid() = user_id);
+create policy "sellers delete" on public.sellers for delete using (auth.uid() = user_id);
 
 -- verifications
 drop policy if exists "verifications read"   on public.verifications;

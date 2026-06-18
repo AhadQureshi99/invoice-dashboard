@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { HiInformationCircle, HiOutlineCloudUpload, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { verifyAndRecord } from '../../services/fbr'
+import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import { parseCSV } from '../../lib/export'
 
@@ -51,7 +52,27 @@ const VerificationForm = ({ onResult }) => {
   const [busy, setBusy] = useState(false)
   const [msg,  setMsg]  = useState(null)
   const [bulk, setBulk] = useState({ done: 0, total: 0, errors: 0, results: [] })
+  const [sellers, setSellers]   = useState([])
+  const [sellerId, setSellerId] = useState('')
   const ref = useRef(null)
+
+  useEffect(() => {
+    listSellers().then(list => {
+      setSellers(list)
+      const def = list.find(s => s.is_default) || list[0]
+      if (def) setSellerId(def.id)
+    }).catch(() => {})
+  }, [])
+
+  const seller = useMemo(() => sellers.find(s => s.id === sellerId) || null, [sellers, sellerId])
+  // Seller fields + token come from the chosen company, overriding form input.
+  const sellerFields = () => (seller ? {
+    seller_ntn:      seller.ntn,
+    seller_name:     seller.company_name,
+    seller_province: seller.province || form.seller_province,
+    seller_address:  seller.address || form.seller_address,
+    fbr_token:       seller.fbr_token,
+  } : {})
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
@@ -74,6 +95,7 @@ const VerificationForm = ({ onResult }) => {
     try {
       const payload = {
         ...form,
+        ...sellerFields(),
         invoice_ref_no: form.invoice_number,
         items: items.map(it => ({
           hs_code: it.hs_code, description: it.description, rate: it.rate, uom: it.uom,
@@ -115,9 +137,10 @@ const VerificationForm = ({ onResult }) => {
             invoice_number: r.invoice_number, invoice_date: r.invoice_date,
             seller_ntn:     r.seller_ntn,     seller_name: r.seller_name,
             seller_province:r.seller_province,seller_address: r.seller_address,
+            ...sellerFields(),
             buyer_ntn:      r.buyer_ntn,      buyer_name:  r.buyer_name,
             buyer_province: r.buyer_province, buyer_address: r.buyer_address,
-            buyer_reg_type: r.buyer_reg_type || 'Registered',
+            buyer_reg_type: r.buyer_reg_type || '',
             scenario_id:    r.scenario_id || 'SN000',
             invoice_ref_no: r.invoice_number,
             items: [{
@@ -167,8 +190,20 @@ const VerificationForm = ({ onResult }) => {
             <Field label="Invoice Date"   type="date" value={form.invoice_date}   onChange={set('invoice_date')} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Field label="Seller NTN" value={form.seller_ntn} onChange={set('seller_ntn')} placeholder="xxxxxxxxx-x" />
-            <Field label="Buyer NTN"  value={form.buyer_ntn}  onChange={set('buyer_ntn')}  placeholder="xxxxxxxxx-x" />
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller Company</label>
+              {sellers.length === 0 ? (
+                <a href="/dashboard/settings" className="block border border-dashed border-amber-300 bg-amber-50 rounded-lg px-3.5 py-2.5 text-sm text-amber-700 hover:bg-amber-100 transition-colors">
+                  Add a company + FBR token in Settings →
+                </a>
+              ) : (
+                <select value={sellerId} onChange={(e) => setSellerId(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors">
+                  {sellers.map(s => <option key={s.id} value={s.id}>{s.company_name} — {s.ntn}{s.is_default ? ' (default)' : ''}</option>)}
+                </select>
+              )}
+            </div>
+            <Field label="Buyer NTN"  value={form.buyer_ntn}  onChange={set('buyer_ntn')}  placeholder="7-digit NTN or 13-digit CNIC" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Seller Business Name" value={form.seller_name} onChange={set('seller_name')} />
