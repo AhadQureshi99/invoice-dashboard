@@ -5,6 +5,13 @@ const TOKEN     = import.meta.env.VITE_FBR_TOKEN
 const FBR_BASE  = import.meta.env.VITE_FBR_BASE_URL || 'https://gw.fbr.gov.pk'
 const IS_DEV    = import.meta.env.DEV
 
+// An FBR token is bound to exactly ONE seller registration number. This app
+// files only for that seller, so the seller NTN is fixed here — never taken
+// from per-draft input — so a wrong/blank/typo'd seller can't trigger FBR's
+// "token does not exist against seller registration number" error.
+// Override via VITE_FBR_SELLER_NTN if the token's registered seller changes.
+export const SELLER_NTN = String(import.meta.env.VITE_FBR_SELLER_NTN || '3740697867821').replace(/\D/g, '')
+
 // Switch between FBR sandbox (testing) and production by setting
 // VITE_FBR_MODE=production in the environment. Sandbox endpoints use the
 // "_sb" suffix; production endpoints drop it. Defaults to sandbox so a
@@ -99,11 +106,13 @@ const usableScenario = (v) => (v && v !== 'SN000')      ? v : DEFAULT_SCENARIO
  * Build the FBR payload from a normalized internal invoice shape.
  */
 export function buildPayload(input) {
-  const sellerNTN = normalizeNTN(input.seller_ntn)
+  // Seller is fixed to the token's registered NTN — never taken from input —
+  // so an invoice can never be rejected for a mismatched/invalid seller.
+  const sellerNTN = SELLER_NTN
   if (!isValidNTN(sellerNTN)) {
     throw new Error(
-      'Seller NTN/CNIC must be exactly 7 digits (NTN) or 13 digits (CNIC), digits only. ' +
-      'It must also match the registration the FBR token is issued against.'
+      `Configured seller NTN "${sellerNTN}" is invalid — set VITE_FBR_SELLER_NTN ` +
+      'to the 7-digit NTN or 13-digit CNIC the FBR token is registered against.'
     )
   }
   const items = (input.items || []).map(it => ({

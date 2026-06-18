@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
+import { SELLER_NTN } from '../../services/fbr'
 import { logActivity } from '../../services/activity'
 import BrandingAssets from '../common/BrandingAssets'
 import VerifyButton from '../common/VerifyButton'
@@ -26,7 +27,7 @@ const NewQuickDraft = ({ onSaved }) => {
   const [form, setForm] = useState({
     invoice_number: draftNumber(),
     invoice_date:   todayISO(),
-    seller_ntn:     '',
+    seller_ntn:     SELLER_NTN,
     buyer_ntn:      '',
   })
   const [items, setItems] = useState([blankItem()])
@@ -147,8 +148,8 @@ const NewQuickDraft = ({ onSaved }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN</label>
-          <input type="text" value={form.seller_ntn} onChange={set('seller_ntn')} placeholder="7-digit NTN or 13-digit CNIC" className={inputClass} />
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Seller NTN <span className="text-gray-400 font-normal">(registered — locked)</span></label>
+          <input type="text" value={form.seller_ntn} readOnly title="Fixed to the NTN your FBR token is registered against" className={`${inputClass} bg-gray-50 text-gray-500 cursor-not-allowed`} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>
