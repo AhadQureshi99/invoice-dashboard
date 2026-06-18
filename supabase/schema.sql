@@ -488,6 +488,14 @@ create policy "status read" on public.system_status for select using (auth.uid()
 alter table public.profiles add column if not exists logo_url    text;
 alter table public.profiles add column if not exists barcode_url text;
 
+-- ── Self-heal existing tables (add columns the code/triggers rely on) ───────
+-- `create table if not exists` never alters an existing table, so columns
+-- added to this schema after the first deploy must be back-filled explicitly.
+alter table public.profiles add column if not exists org_id        uuid;
+update public.profiles set org_id = id where org_id is null;     -- each user owns their own org
+alter table public.invoices add column if not exists hash_checksum text;
+alter table public.invoices add column if not exists qr_code       text;
+
 insert into storage.buckets (id, name, public)
 values ('logos', 'logos', true)
 on conflict (id) do nothing;
