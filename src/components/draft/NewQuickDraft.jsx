@@ -13,7 +13,8 @@ const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-
 const GST_RATE = 0.18
 const todayISO = () => new Date().toISOString().slice(0, 10)
 const draftNumber = () => `DFT-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`
-const blankItem = () => ({ description: '', quantity: 1, unit_price: 0 })
+const DEFAULT_HS = '0101.2100'
+const blankItem = () => ({ description: '', quantity: 1, unit_price: 0, hs_code: DEFAULT_HS })
 
 const lineTotals = (it) => {
   const sub = Number(it.quantity || 0) * Number(it.unit_price || 0)
@@ -53,8 +54,8 @@ const NewQuickDraft = ({ onSaved }) => {
         description:   (it.description || '').trim(),
         quantity:      Number(it.quantity),
         rate:          '18%',
-        hs_code:       '0000.0000',
-        uom:           'Numbers, pieces, units',
+        hs_code:       (it.hs_code || '').trim() || DEFAULT_HS,
+        // uom intentionally omitted — verifyAndRecord fetches the valid UoM for the HS code
         value_excl_st: sub,
         sales_tax:     gst,
         total,
@@ -92,6 +93,7 @@ const NewQuickDraft = ({ onSaved }) => {
             description: (it.description || '').trim(),
             quantity:    Number(it.quantity),
             unit_price:  Number(it.unit_price),
+            hs_code:     (it.hs_code || '').trim() || DEFAULT_HS,
             subtotal:    sub,
             tax_amount:  gst,
             total,
@@ -192,6 +194,17 @@ const NewQuickDraft = ({ onSaved }) => {
                 >
                   <HiOutlineTrash className="w-4 h-4" />
                 </button>
+              </div>
+              <div className="pl-5 mb-2">
+                <label className="block text-[10px] font-semibold text-gray-400 mb-1">HS Code</label>
+                <input
+                  type="text"
+                  value={it.hs_code}
+                  onChange={setItem(idx, 'hs_code')}
+                  placeholder="e.g. 0101.2100"
+                  title="FBR HS code for this product. The correct unit of measure is fetched automatically."
+                  className={`${inputClass} bg-white`}
+                />
               </div>
               <div className="grid grid-cols-3 gap-2 pl-5">
                 <div>

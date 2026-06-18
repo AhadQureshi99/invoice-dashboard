@@ -97,6 +97,23 @@ export async function getRegistrationType(ntn) {
 }
 
 /**
+ * Look up the valid Unit of Measure for an HS code. FBR rejects an item
+ * (errorCode 0099) when the UoM doesn't match the HS code, so we fetch the
+ * allowed UoM instead of guessing. Returns the UoM string or null.
+ */
+export async function getUoMForHsCode(hsCode) {
+  const hs = (hsCode || '').trim()
+  if (!hs) return null
+  try {
+    const data = await call('GET', `/pdi/v2/HS_UOM?hs_code=${encodeURIComponent(hs)}&annexure_id=3`)
+    const list = Array.isArray(data) ? data : []
+    return list[0]?.description || null
+  } catch (_) {
+    return null
+  }
+}
+
+/**
  * FBR accepts a seller/buyer registration number as raw digits only:
  * a 7-digit NTN or a 13-digit CNIC. Strip any dashes/spaces the user typed
  * (e.g. "1234567-8") so a formatting slip can't trigger FBR's
@@ -183,7 +200,17 @@ export async function verifyAndRecord(input) {
   if (!buyerRegType) {
     buyerRegType = (await getRegistrationType(input.buyer_ntn)) || 'Unregistered'
   }
-  const payload = buildPayload({ ...input, buyer_reg_type: buyerRegType })
+
+  // Resolve the valid UoM for each item's HS code (avoids errorCode 0099
+  // "Provided UoM is not allowed against the provided HS Code"). Keep any
+  // explicit UoM; otherwise ask FBR what's allowed for that HS code.
+  const items = await Promise.all((input.items || []).map(async (it) => {
+    if (it.uom) return it
+    const uom = await getUoMForHsCode(usableHsCode(it.hs_code))
+    return uom ? { ...it, uom } : it
+  }))
+
+  const payload = buildPayload({ ...input, items, buyer_reg_type: buyerRegType })
   const started = Date.now()
   let response, ok = true, errorMsg = null
   try {
