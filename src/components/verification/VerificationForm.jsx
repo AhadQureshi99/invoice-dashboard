@@ -16,7 +16,10 @@ const initial = {
   buyer_name:     '',
   buyer_province: 'Punjab',
   buyer_address:  '',
-  buyer_reg_type: 'Registered',
+  // Empty => verifyAndRecord auto-detects the buyer's registration type from
+  // FBR (avoids errorCode 0053 when a walk-in/unregistered buyer is filed). The
+  // form's selector can override this with an explicit Registered/Unregistered.
+  buyer_reg_type: '',
   scenario_id:    'SN000',
 }
 
@@ -208,6 +211,18 @@ const VerificationForm = ({ onResult }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Seller Business Name" value={form.seller_name} onChange={set('seller_name')} />
             <Field label="Buyer Business Name"  value={form.buyer_name}  onChange={set('buyer_name')} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer Registration Type</label>
+              <select value={form.buyer_reg_type} onChange={set('buyer_reg_type')}
+                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors">
+                <option value="">Auto-detect from buyer NTN</option>
+                <option value="Registered">Registered</option>
+                <option value="Unregistered">Unregistered</option>
+              </select>
+              <p className="text-[11px] text-gray-400 mt-1">Leave on auto-detect for walk-in/unregistered buyers to avoid FBR error 0053.</p>
+            </div>
           </div>
           <div className="border border-gray-100 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 border-b border-gray-100">
