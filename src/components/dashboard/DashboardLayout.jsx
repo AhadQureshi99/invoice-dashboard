@@ -24,7 +24,7 @@ const DashboardLayout = ({ children }) => {
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 h-full z-50 flex-shrink-0
+          no-print fixed top-0 left-0 h-full z-50 flex-shrink-0
           lg:static lg:z-auto lg:flex
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -47,7 +47,7 @@ const DashboardLayout = ({ children }) => {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Mobile top bar with hamburger */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-2.5 bg-[#f0f4f8] border-b border-[#dce4ef] flex-shrink-0">
+        <div className="no-print lg:hidden flex items-center gap-3 px-4 py-2.5 bg-[#f0f4f8] border-b border-[#dce4ef] flex-shrink-0">
           <button
             className="p-1.5 rounded-lg bg-[#0e5f4f] text-white flex-shrink-0"
             onClick={() => setOpen(true)}

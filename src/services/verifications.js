@@ -18,6 +18,22 @@ export async function recordVerification(row) {
   return data
 }
 
+// The FBR invoice number (used for the QR code) is recorded here at verify time,
+// keyed by invoice_number. An invoices row that was verified as a draft won't
+// carry it, so the invoice view falls back to the latest verified record.
+export async function latestVerifiedFor(invoiceNumber) {
+  if (!invoiceNumber) return null
+  const { data, error } = await supabase
+    .from('verifications')
+    .select('fbr_invoice_no,fbr_status_code,status,created_at')
+    .eq('invoice_number', invoiceNumber)
+    .not('fbr_invoice_no', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (error) return null
+  return (data && data[0]) || null
+}
+
 export async function verificationStats() {
   const { data, error } = await supabase.from('verifications').select('status,response_time_ms')
   if (error) throw error

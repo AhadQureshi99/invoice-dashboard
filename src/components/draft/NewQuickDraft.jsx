@@ -1,16 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
 import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import BrandingAssets from '../common/BrandingAssets'
 import VerifyButton from '../common/VerifyButton'
+import Modal from '../common/Modal'
+import HsCodeInput from './HsCodeInput'
+import ProductInput from './ProductInput'
+import { fbrErrorText } from '../../services/fbr'
 
 const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
   placeholder:text-gray-300 text-gray-700
   focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors`
 
 const GST_RATE = 0.18
+// FBR-accepted province values. A registered buyer's invoice is rejected when
+// buyerProvince is blank, so this must be selectable on the draft.
+const PROVINCES = ['Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan', 'Capital Territory', 'Gilgit-Baltistan', 'Azad Jammu and Kashmir']
 const todayISO = () => new Date().toISOString().slice(0, 10)
 const draftNumber = () => `DFT-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`
 const DEFAULT_HS = '0101.2100'
@@ -25,16 +33,29 @@ const lineTotals = (it) => {
 const money = (n) => Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const NewQuickDraft = ({ onSaved }) => {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     invoice_number: draftNumber(),
     invoice_date:   todayISO(),
     buyer_ntn:      '',
+    buyer_name:     '',
+    buyer_province: '',
+    buyer_address:  '',
   })
   const [items, setItems] = useState([blankItem()])
   const [sellers, setSellers]       = useState([])
   const [sellerId, setSellerId]     = useState('')
   const [busy, setBusy] = useState(false)
   const [msg,  setMsg]  = useState(null)
+  const [showPreview, setShowPreview] = useState(false)
+
+  // Print just the preview: isolate .print-area via body.printing-preview.
+  const handlePrint = () => {
+    document.body.classList.add('printing-preview')
+    const cleanup = () => { document.body.classList.remove('printing-preview'); window.removeEventListener('afterprint', cleanup) }
+    window.addEventListener('afterprint', cleanup)
+    window.print()
+  }
 
   // Load the user's companies; preselect the default (or first) one.
   useEffect(() => {
@@ -64,6 +85,9 @@ const NewQuickDraft = ({ onSaved }) => {
     seller_address: seller?.address || '',
     fbr_token:      seller?.fbr_token || '',
     buyer_ntn:      form.buyer_ntn,
+    buyer_name:     form.buyer_name,
+    buyer_province: form.buyer_province,
+    buyer_address:  form.buyer_address,
     items: items.map(it => {
       const { sub, gst, total } = lineTotals(it)
       return {
@@ -86,7 +110,7 @@ const NewQuickDraft = ({ onSaved }) => {
       kind: result.status === 'verified' ? 'ok' : 'err',
       text: result.status === 'verified'
         ? `Verified by FBR in ${(result.durationMs / 1000).toFixed(1)}s`
-        : (result.response?.validationResponse?.error || 'FBR rejected the invoice'),
+        : (fbrErrorText(result.response) || result.error || 'FBR rejected the invoice'),
     })
   }
 
@@ -95,6 +119,10 @@ const NewQuickDraft = ({ onSaved }) => {
     const val = e.target.value
     setItems(list => list.map((it, i) => (i === idx ? { ...it, [key]: val } : it)))
   }
+  // Set an item field directly from a value (used by the HS-code picker).
+  const setItemVal = (idx, key, val) => setItems(list => list.map((it, i) => (i === idx ? { ...it, [key]: val } : it)))
+  // Set multiple item fields at once (used when a product suggestion is picked).
+  const setItemFields = (idx, patch) => setItems(list => list.map((it, i) => (i === idx ? { ...it, ...patch } : it)))
   const addItem = () => setItems(list => [...list, blankItem()])
   const removeItem = (idx) => setItems(list => (list.length === 1 ? list : list.filter((_, i) => i !== idx)))
 
@@ -128,19 +156,23 @@ const NewQuickDraft = ({ onSaved }) => {
         seller_id:      seller?.id || null,
         seller_ntn:     seller?.ntn || '',
         buyer_ntn:      form.buyer_ntn,
+        buyer_name:     form.buyer_name,
         description:    summary,
         quantity:       cleanItems.reduce((s, it) => s + it.quantity, 0),
         unit_price:     first.unit_price,
         subtotal:       totals.sub,
         tax_amount:     totals.gst,
         total_amount:   totals.total,
-        payload:        { items: cleanItems },
+        // Buyer province/address have no dedicated columns, so they ride along
+        // in the payload and are read back by the verifier + edit modal.
+        payload:        { items: cleanItems, buyer_province: form.buyer_province, buyer_address: form.buyer_address },
       })
       await logActivity({ action: 'Draft Saved', subject: row.invoice_number, status: 'Saved', type: 'saved' })
       setMsg({ kind: 'ok', text: `Draft saved with ${cleanItems.length} product${cleanItems.length > 1 ? 's' : ''}.` })
-      setForm(f => ({ ...f, invoice_number: draftNumber() }))
+      setForm(f => ({ ...f, invoice_number: draftNumber(), buyer_ntn: '', buyer_name: '', buyer_province: '', buyer_address: '' }))
       setItems([blankItem()])
       onSaved?.()
+      navigate('/dashboard/reports')
     } catch (err) {
       setMsg({ kind: 'err', text: err.message })
     } finally {
@@ -152,7 +184,7 @@ const NewQuickDraft = ({ onSaved }) => {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
 
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-[#0e5f4f]">New Quick Draft</p>
+        <p className="text-sm font-bold text-[#0e5f4f]">Create Invoice</p>
         <span className="text-[10px] text-gray-400 font-medium">ID: {form.invoice_number}</span>
       </div>
 
@@ -184,6 +216,24 @@ const NewQuickDraft = ({ onSaved }) => {
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>
           <input type="text" value={form.buyer_ntn} onChange={set('buyer_ntn')} placeholder="7-digit NTN or 13-digit CNIC" className={inputClass} />
         </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            Buyer Name <span className="text-red-500">*</span>
+          </label>
+          <input type="text" value={form.buyer_name} onChange={set('buyer_name')} placeholder="Buyer business name (required by FBR)" className={inputClass} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer Province</label>
+          <select value={form.buyer_province} onChange={set('buyer_province')} className={inputClass}>
+            <option value="">Select province…</option>
+            {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <p className="text-[10px] text-gray-400 mt-1">Required when the buyer is FBR-registered.</p>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer Address</label>
+          <input type="text" value={form.buyer_address} onChange={set('buyer_address')} placeholder="Buyer address" className={inputClass} />
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -205,13 +255,19 @@ const NewQuickDraft = ({ onSaved }) => {
             <div key={idx} className="rounded-xl border border-gray-200 p-3 flex flex-col gap-2.5 bg-[#fafbfc]">
               <div className="flex items-start gap-2">
                 <span className="mt-2.5 text-[10px] font-bold text-gray-400 w-3 shrink-0">{idx + 1}</span>
-                <input
-                  type="text"
-                  value={it.description}
-                  onChange={setItem(idx, 'description')}
-                  placeholder="Product / item description"
-                  className={`${inputClass} bg-white`}
-                />
+                <div className="flex-1">
+                  <ProductInput
+                    value={it.description}
+                    sellerId={seller?.id}
+                    onChange={(v) => setItemVal(idx, 'description', v)}
+                    onPick={(p) => setItemFields(idx, {
+                      description: p.description,
+                      hs_code: p.hs_code || it.hs_code,
+                      unit_price: p.unit_price || it.unit_price,
+                    })}
+                    className={`${inputClass} bg-white`}
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => removeItem(idx)}
@@ -224,12 +280,9 @@ const NewQuickDraft = ({ onSaved }) => {
               </div>
               <div className="pl-5 mb-2">
                 <label className="block text-[10px] font-semibold text-gray-400 mb-1">HS Code</label>
-                <input
-                  type="text"
+                <HsCodeInput
                   value={it.hs_code}
-                  onChange={setItem(idx, 'hs_code')}
-                  placeholder="e.g. 0101.2100"
-                  title="FBR HS code for this product. The correct unit of measure is fetched automatically."
+                  onChange={(v) => setItemVal(idx, 'hs_code', v)}
                   className={`${inputClass} bg-white`}
                 />
               </div>
@@ -286,7 +339,7 @@ const NewQuickDraft = ({ onSaved }) => {
       />
 
       <div className="grid grid-cols-2 gap-3 pt-1">
-        <button className="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+        <button type="button" onClick={() => setShowPreview(true)} className="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
           <HiOutlineEye className="w-4 h-4" />
           Preview
         </button>
@@ -294,6 +347,81 @@ const NewQuickDraft = ({ onSaved }) => {
           {busy ? 'Saving…' : 'Save Draft'}
         </button>
       </div>
+
+      <Modal
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+        title="Invoice Preview"
+        maxWidth="max-w-2xl"
+        footer={
+          <>
+            <button onClick={() => setShowPreview(false)} className="no-print border border-gray-300 rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Close</button>
+            <button onClick={handlePrint} className="no-print bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-4 py-2 text-sm font-semibold">Print / Save PDF</button>
+          </>
+        }
+      >
+        <div className="print-area flex flex-col gap-5 text-gray-800">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-base font-bold">Invoice</p>
+              <p className="text-xs text-gray-500 mt-0.5">ID: {form.invoice_number}</p>
+              <p className="text-xs text-gray-400">Date: {form.invoice_date}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-black text-[#0e5f4f]">PKR {money(totals.total)}</p>
+              <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Total Amount</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6 border-t border-gray-100 pt-4">
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Seller</p>
+              <p className="text-sm font-bold">{seller?.company_name || '—'}</p>
+              <p className="text-xs text-gray-500 mt-1">NTN: {seller?.ntn || '—'}</p>
+              <p className="text-xs text-gray-500">{seller?.address || ''}{seller?.province ? `, ${seller.province}` : ''}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Buyer</p>
+              <p className="text-sm font-bold">{form.buyer_name || '—'}</p>
+              <p className="text-xs text-gray-500 mt-1">NTN: {form.buyer_ntn || '—'}</p>
+              <p className="text-xs text-gray-500">{form.buyer_address || ''}{form.buyer_province ? `, ${form.buyer_province}` : ''}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 pt-4">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left">
+                  <th className="pb-2">Description</th>
+                  <th className="pb-2">HS Code</th>
+                  <th className="pb-2 text-center">Qty</th>
+                  <th className="pb-2 text-right">Unit Price</th>
+                  <th className="pb-2 text-right">Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((it, idx) => {
+                  const lt = lineTotals(it)
+                  return (
+                    <tr key={idx} className="border-b border-gray-50 text-xs text-gray-700">
+                      <td className="py-2 pr-3">{it.description || '—'}</td>
+                      <td className="py-2 pr-3">{it.hs_code || '—'}</td>
+                      <td className="py-2 text-center">{it.quantity}</td>
+                      <td className="py-2 text-right">{money(it.unit_price)}</td>
+                      <td className="py-2 text-right font-semibold">{money(lt.total)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <div className="mt-4 flex flex-col items-end gap-1.5">
+              <div className="flex items-center gap-12"><span className="text-xs text-gray-500">Subtotal</span><span className="text-xs font-semibold w-32 text-right">{money(totals.sub)}</span></div>
+              <div className="flex items-center gap-12"><span className="text-xs text-gray-500">GST (18%)</span><span className="text-xs font-semibold w-32 text-right">{money(totals.gst)}</span></div>
+              <div className="flex items-center gap-12 border-t border-gray-200 pt-2 mt-1"><span className="text-sm font-bold">Total</span><span className="text-sm font-black text-[#0e5f4f] w-32 text-right">PKR {money(totals.total)}</span></div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

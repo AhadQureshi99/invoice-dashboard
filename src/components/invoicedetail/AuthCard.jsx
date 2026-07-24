@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 import { supabase } from '../../lib/supabase'
 
 const md5ish = (str) => {
@@ -38,6 +39,7 @@ const AuthCard = () => {
 
   const status = latest?.status || inv.status
   const checksum = md5ish(`${inv.id}-${inv.invoice_number}-${inv.total_amount}`)
+  const fbrNo = latest?.fbr_invoice_no || inv.fbr_invoice_no || null
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-5">
@@ -63,18 +65,22 @@ const AuthCard = () => {
       </div>
 
       <div className="flex items-start gap-4">
-        <div className="w-20 h-20 rounded-xl border-2 border-gray-200 bg-gray-50 flex-shrink-0 flex items-center justify-center overflow-hidden">
-          <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
-            <rect x="2" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
-            <rect x="4" y="4" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="5.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
-            <rect x="26" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
-            <rect x="28" y="4" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="29.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
-            <rect x="2" y="26" width="12" height="12" rx="1" fill="#0e5f4f"/>
-            <rect x="4" y="28" width="8" height="8" rx="0.5" fill="white"/>
-            <rect x="5.5" y="29.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
-          </svg>
+        <div className="w-20 h-20 rounded-xl border-2 border-gray-200 bg-white flex-shrink-0 flex items-center justify-center overflow-hidden">
+          {fbrNo ? (
+            <QRCodeSVG value={fbrNo} size={64} level="M" />
+          ) : (
+            <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+              <rect x="2" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
+              <rect x="4" y="4" width="8" height="8" rx="0.5" fill="white"/>
+              <rect x="5.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
+              <rect x="26" y="2" width="12" height="12" rx="1" fill="#0e5f4f"/>
+              <rect x="28" y="4" width="8" height="8" rx="0.5" fill="white"/>
+              <rect x="29.5" y="5.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
+              <rect x="2" y="26" width="12" height="12" rx="1" fill="#0e5f4f"/>
+              <rect x="4" y="28" width="8" height="8" rx="0.5" fill="white"/>
+              <rect x="5.5" y="29.5" width="5" height="5" rx="0.3" fill="#0e5f4f"/>
+            </svg>
+          )}
         </div>
         <div>
           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">FBR Invoice No</p>
@@ -95,7 +101,7 @@ const AuthCard = () => {
         </div>
         <div className="flex justify-between">
           <span className="text-xs text-gray-400">Verified On</span>
-          <span className="text-xs font-semibold text-gray-700">{latest?.created_at ? new Date(latest.created_at).toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</span>
+          <span className="text-xs font-semibold text-gray-700">{latest?.created_at ? new Date(latest.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</span>
         </div>
       </div>
     </div>

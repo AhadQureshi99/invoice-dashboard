@@ -7,6 +7,7 @@ import SecurityAccess  from '../components/settings/SecurityAccess'
 import PrivacyGuard    from '../components/settings/PrivacyGuard'
 import TeamManagement  from '../components/settings/TeamManagement'
 import SellerManagement from '../components/settings/SellerManagement'
+import ProductCatalog  from '../components/settings/ProductCatalog'
 import RolesLegend     from '../components/settings/RolesLegend'
 
 const SettingsPage = () => {
@@ -43,6 +44,7 @@ const SettingsPage = () => {
             </div>
 
             <SellerManagement key={`sm-${refreshKey}`} />
+            <ProductCatalog key={`pc-${refreshKey}`} />
             <TeamManagement key={`tm-${refreshKey}`} />
             <RolesLegend    key={`rl-${refreshKey}`} />
 

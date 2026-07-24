@@ -125,7 +125,7 @@ const ValidationPreviewTable = ({ filters = {}, refreshKey = 0, onChange }) => {
               <tr key={row.id} className="border-b border-gray-50 last:border-0">
                 <td className={`${tdClass} font-medium text-gray-800`}>{row.invoice_number}</td>
                 <td className={tdClass}>{row.buyer_ntn || '—'}</td>
-                <td className={tdClass}>{row.invoice_date ? new Date(row.invoice_date).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
+                <td className={tdClass}>{row.invoice_date ? new Date(row.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
                 <td className={tdClass}>{Number(row.total_amount || 0).toLocaleString()}</td>
                 <td className={tdClass}><StatusBadge status={row.status} /></td>
                 <td className={tdClass}>

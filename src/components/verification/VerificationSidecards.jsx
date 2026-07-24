@@ -76,7 +76,7 @@ const VerificationSidecards = ({ onBulkClick }) => {
         <div className="mb-3"><ApiIcon /></div>
         <p className="text-sm font-bold text-[#0e5f4f] mb-1.5">Verification API</p>
         <p className="text-xs text-gray-400 leading-relaxed mb-4">
-          POST /di_data/v1/di/postinvoicedata_sb on https://gw.fbr.gov.pk
+          POST /di_data/v1/di/postinvoicedata{import.meta.env.VITE_FBR_MODE === 'production' ? '' : '_sb'} on https://gw.fbr.gov.pk
         </p>
         <a
           href="https://gw.fbr.gov.pk"

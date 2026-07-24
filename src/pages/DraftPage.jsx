@@ -5,6 +5,7 @@ import DraftTopBar      from '../components/draft/DraftTopBar'
 import DraftTable       from '../components/draft/DraftTable'
 import NewQuickDraft    from '../components/draft/NewQuickDraft'
 import DraftBottomCards from '../components/draft/DraftBottomCards'
+import TestCasesPanel   from '../components/draft/TestCasesPanel'
 
 const DraftPage = () => {
   const [refreshKey, setRefreshKey] = useState(0)
@@ -22,8 +23,8 @@ const DraftPage = () => {
 
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-[#0e5f4f] leading-tight">Draft Invoices</h1>
-                <p className="text-xs text-gray-400 mt-1">Manage and complete your pending tax filings.</p>
+                <h1 className="text-2xl font-bold text-[#0e5f4f] leading-tight">Create Invoice</h1>
+                <p className="text-xs text-gray-400 mt-1">Create, manage and complete your invoices.</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -40,7 +41,7 @@ const DraftPage = () => {
                   className="flex items-center gap-1.5 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm"
                 >
                   <HiOutlinePlusCircle className="w-4 h-4" />
-                  {showQuick ? 'Hide Draft Form' : 'Create New Draft'}
+                  {showQuick ? 'Hide Invoice Form' : 'Create Invoice'}
                 </button>
               </div>
             </div>
@@ -67,6 +68,8 @@ const DraftPage = () => {
                 </div>
               )}
             </div>
+
+            <TestCasesPanel />
 
             <DraftBottomCards refreshKey={refreshKey} />
 

@@ -5,7 +5,9 @@ import { listSellers, createSeller, updateSeller, deleteSeller, setDefaultSeller
 const inputClass = `w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-700 bg-white
   placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors`
 
-const blankForm = () => ({ company_name: '', ntn: '', fbr_token: '', fbr_mode: 'production', province: '', address: '' })
+// New companies default to sandbox: FBR issues a sandbox token first and only
+// releases the production token after the sandbox test cases pass.
+const blankForm = () => ({ company_name: '', ntn: '', fbr_token: '', fbr_mode: 'sandbox', province: '', address: '' })
 const maskToken = (t) => (t && t.length > 8 ? `${t.slice(0, 4)}…${t.slice(-4)}` : '••••')
 const ntnOk = (v) => { const d = String(v || '').replace(/\D/g, ''); return d.length === 7 || d.length === 13 }
 
@@ -91,8 +93,8 @@ const SellerManagement = () => {
             <div>
               <label className="block text-[10px] font-semibold text-gray-500 mb-1">FBR Mode</label>
               <select value={form.fbr_mode} onChange={set('fbr_mode')} className={inputClass}>
+                <option value="sandbox">Sandbox (testing — default)</option>
                 <option value="production">Production (live filing)</option>
-                <option value="sandbox">Sandbox (testing)</option>
               </select>
             </div>
             <div>

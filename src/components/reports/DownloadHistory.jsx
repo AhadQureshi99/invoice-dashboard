@@ -15,7 +15,7 @@ const thClass = 'text-[10px] font-semibold text-gray-400 uppercase tracking-wide
 const tdClass = 'text-sm text-gray-600 py-3.5'
 const PAGE_SIZE = 10
 
-const fmtTs = (iso) => iso ? new Date(iso).toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
+const fmtTs = (iso) => iso ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
 
 const DownloadHistory = ({ refreshKey = 0 }) => {
   const [rows,    setRows]    = useState([])

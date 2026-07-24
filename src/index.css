@@ -22,3 +22,36 @@
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
+
+/* Print / Save-as-PDF rules.
+   - Anything marked .no-print is dropped from printouts (sidebars, action
+     buttons, the "Need to Void?" banner — none of that belongs on an invoice).
+   - When printing a preview, body.printing-preview isolates .print-area so only
+     the invoice itself is rendered. */
+@media print {
+  .no-print { display: none !important; }
+
+  /* The dashboard shell uses h-screen + overflow-hidden/overflow-y-auto, which
+     clips the printout to a single viewport — cutting off the bottom of the
+     invoice (the FBR QR code lives there). Release every height/overflow trap
+     so the full invoice flows across pages, and force graphics (the QR) to
+     actually render in the PDF. */
+  html, body, #root { height: auto !important; overflow: visible !important; }
+  #root, #root * { overflow: visible !important; max-height: none !important; }
+  #root .h-screen, #root [class*="h-screen"] { height: auto !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* Keep the totals block (and the FBR QR block right after it) from being
+     split across a page boundary, so "Total Amount" never lands alone on a
+     second printed page. */
+  .print-keep-together { break-inside: avoid; page-break-inside: avoid; }
+
+  body.printing-preview * { visibility: hidden !important; }
+  body.printing-preview .print-area,
+  body.printing-preview .print-area * { visibility: visible !important; }
+  body.printing-preview .print-area {
+    position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0;
+  }
+  /* A modal's dark backdrop must not paint the whole printed page. */
+  body.printing-preview .modal-backdrop { display: none !important; }
+}

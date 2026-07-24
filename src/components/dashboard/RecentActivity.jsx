@@ -21,7 +21,7 @@ const fmt = (iso) => {
   const d = new Date(iso)
   const sameDay = d.toDateString() === new Date().toDateString()
   const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-  return sameDay ? `Today, ${time}` : `${d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}, ${time}`
+  return sameDay ? `Today, ${time}` : `${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}, ${time}`
 }
 
 const RecentActivity = () => {

@@ -53,7 +53,7 @@ const InvoiceTable = () => {
             {!loading && rows.length === 0 && <tr><td colSpan={7} className="text-center py-8 text-xs text-gray-400">No invoices yet</td></tr>}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-gray-50 last:border-0">
-                <td className={`${tdClass} text-gray-500`}>{row.invoice_date ? new Date(row.invoice_date).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
+                <td className={`${tdClass} text-gray-500`}>{row.invoice_date ? new Date(row.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
                 <td className={`${tdClass} font-semibold text-gray-800`}>{row.invoice_number}</td>
                 <td className={tdClass}>
                   <p className="text-gray-800 font-medium">{row.buyer_ntn}</p>

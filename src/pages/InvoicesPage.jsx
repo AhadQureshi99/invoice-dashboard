@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { HiOutlineFilter, HiOutlinePlusCircle } from 'react-icons/hi'
 import DashboardLayout       from '../components/dashboard/DashboardLayout'
 import InvoiceTopBar         from '../components/invoices/InvoiceTopBar'
@@ -7,10 +6,11 @@ import BulkUploadCard        from '../components/invoices/BulkUploadCard'
 import UploadStatusCards     from '../components/invoices/UploadStatusCards'
 import ValidationPreviewTable from '../components/invoices/ValidationPreviewTable'
 import AdvancedFilters       from '../components/invoices/AdvancedFilters'
+import NewQuickDraft         from '../components/draft/NewQuickDraft'
 
 const InvoicesPage = () => {
-  const navigate = useNavigate()
   const [showFilters, setShowFilters] = useState(false)
+  const [showCreate,  setShowCreate]  = useState(false)
   const [filters,     setFilters]     = useState({ status: '', range: '', type: '', min: '', max: '' })
   const [refreshKey,  setRefreshKey]  = useState(0)
   const bump = () => setRefreshKey(k => k + 1)
@@ -37,12 +37,18 @@ const InvoicesPage = () => {
                   <HiOutlineFilter className="w-4 h-4" />
                   Filter
                 </button>
-                <button onClick={() => navigate('/dashboard/draft')} className="flex items-center gap-1.5 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm">
+                <button onClick={() => setShowCreate(s => !s)} className="flex items-center gap-1.5 bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors shadow-sm">
                   <HiOutlinePlusCircle className="w-4 h-4" />
-                  Create New Draft
+                  {showCreate ? 'Hide Invoice Form' : 'Create Invoice'}
                 </button>
               </div>
             </div>
+
+            {showCreate && (
+              <div className="max-w-2xl w-full">
+                <NewQuickDraft onSaved={() => { bump(); setShowCreate(false) }} />
+              </div>
+            )}
 
             {showFilters && <AdvancedFilters onApply={setFilters} />}
 

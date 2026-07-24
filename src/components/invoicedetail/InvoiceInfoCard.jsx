@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import { getInvoice } from '../../services/invoices'
+import { latestVerifiedFor } from '../../services/verifications'
 import { useAuth } from '../../lib/AuthContext'
 
 const thClass = 'text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left pb-3'
@@ -12,10 +13,20 @@ const InvoiceInfoCard = () => {
   const [inv, setInv]       = useState(null)
   const [loading, setLoad]  = useState(true)
   const [err, setErr]       = useState(null)
+  const [fbrNo, setFbrNo]   = useState(null)   // FBR invoice # for the QR (invoice row or its verification)
 
   useEffect(() => {
     if (!id) { setLoad(false); return }
-    getInvoice(id).then(setInv).catch(e => setErr(e.message)).finally(() => setLoad(false))
+    getInvoice(id).then(async (data) => {
+      setInv(data)
+      if (data?.fbr_invoice_no) {
+        setFbrNo(data.fbr_invoice_no)
+      } else if (data?.invoice_number) {
+        // Verified as a draft => FBR number lives in verifications, not on the invoice.
+        const v = await latestVerifiedFor(data.invoice_number).catch(() => null)
+        if (v?.fbr_invoice_no) setFbrNo(v.fbr_invoice_no)
+      }
+    }).catch(e => setErr(e.message)).finally(() => setLoad(false))
   }, [id])
 
   if (loading) return <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-sm text-gray-400">Loading invoice…</div>
@@ -91,7 +102,7 @@ const InvoiceInfoCard = () => {
           </tbody>
         </table>
 
-        <div className="mt-4 flex flex-col items-end gap-1.5">
+        <div className="print-keep-together mt-4 flex flex-col items-end gap-1.5">
           <div className="flex items-center gap-12">
             <span className="text-xs text-gray-500">Subtotal</span>
             <span className="text-xs font-semibold text-gray-700 w-32 text-right">{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
@@ -107,10 +118,10 @@ const InvoiceInfoCard = () => {
         </div>
       </div>
 
-      {inv.fbr_invoice_no && (
-        <div className="border-t border-gray-100 pt-4 flex items-center gap-4">
+      {fbrNo && (
+        <div className="print-keep-together border-t border-gray-100 pt-4 flex items-center gap-4">
           <div className="shrink-0 border border-gray-200 rounded-lg p-1.5 bg-white">
-            <QRCodeSVG value={inv.fbr_invoice_no} size={88} level="M" />
+            <QRCodeSVG value={fbrNo} size={88} level="M" />
           </div>
           <div className="flex flex-col gap-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#0e5f4f] uppercase tracking-wide">
@@ -119,7 +130,7 @@ const InvoiceInfoCard = () => {
               </svg>
               Integrated with FBR Digital Invoicing
             </span>
-            <p className="text-xs font-bold text-gray-800 break-all">FBR Invoice #: {inv.fbr_invoice_no}</p>
+            <p className="text-xs font-bold text-gray-800 break-all">FBR Invoice #: {fbrNo}</p>
             <p className="text-[10px] text-gray-400 leading-snug">
               Verify this invoice through the FBR Tax Asaan mobile app or by scanning the QR code.
             </p>

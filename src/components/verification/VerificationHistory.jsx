@@ -142,7 +142,7 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
   const pages = Math.max(1, Math.ceil(count / PAGE_SIZE))
 
   const fmtDate = (iso) =>
-    iso ? new Date(iso).toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
+    iso ? new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
 
   const exportCSV = () => {
     const header = ['Date', 'Invoice No', 'Seller NTN', 'Buyer NTN', 'Amount', 'Status']

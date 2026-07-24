@@ -106,9 +106,9 @@ const InvoiceDetailPage = () => {
                     {inv?.status || '—'}
                   </div>
                 </div>
-                <p className="text-[11px] text-gray-400 pl-1">Last updated: {inv?.updated_at ? new Date(inv.updated_at).toLocaleString() : '—'}</p>
+                <p className="text-[11px] text-gray-400 pl-1">Last updated: {inv?.updated_at ? new Date(inv.updated_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="no-print flex items-center gap-2">
                 <button onClick={() => window.print()} className="flex items-center gap-1.5 border border-gray-300 bg-white rounded-xl px-3.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
                   <HiOutlineDocumentText className="w-3.5 h-3.5" />
                   PDF
@@ -137,12 +137,17 @@ const InvoiceDetailPage = () => {
               </div>
             )}
 
-            <div className="flex flex-col lg:flex-row gap-5 items-stretch">
-              <div className="w-full lg:w-64 lg:flex-shrink-0">
+            {/* Verification/audit info (FBR status, lifecycle, void) is
+                operational UI, not part of the legal invoice document — kept
+                off the printed PDF so the invoice + total always land on one
+                printed page. Lifecycle now sits directly under the FBR status
+                card instead of as a separate wide block. */}
+            <div className="no-print flex flex-col lg:flex-row gap-5 items-start">
+              <div className="w-full lg:w-64 lg:flex-shrink-0 flex flex-col gap-4">
                 <AuthCard />
-              </div>
-              <div className="flex-1 flex flex-col gap-4">
                 <LifecycleCard />
+              </div>
+              <div className="flex-1">
                 <VoidBanner />
               </div>
             </div>

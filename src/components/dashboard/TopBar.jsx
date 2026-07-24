@@ -20,17 +20,23 @@ const TopBar = () => {
   const name = profile?.entity_name || user?.email || 'Account'
   const role = profile?.role || 'Member'
 
-  // debounce search → invoice quick results
+  // debounce search → quick results across BOTH invoices and drafts. Most of a
+  // seller's work lives in drafts (an invoice number only exists once it's
+  // promoted), so searching invoices alone missed the majority of buyer names.
   useEffect(() => {
     const t = setTimeout(async () => {
       setQuery(local)
       if (!local || local.length < 2) { setResults([]); return }
-      const { data } = await supabase
-        .from('invoices')
-        .select('id,invoice_number,buyer_ntn,buyer_name,total_amount,status')
-        .or(`invoice_number.ilike.%${local}%,buyer_ntn.ilike.%${local}%,buyer_name.ilike.%${local}%,seller_ntn.ilike.%${local}%`)
-        .limit(8)
-      setResults(data || [])
+      const filter = `invoice_number.ilike.%${local}%,buyer_ntn.ilike.%${local}%,buyer_name.ilike.%${local}%,seller_ntn.ilike.%${local}%`
+      const [{ data: invoices }, { data: drafts }] = await Promise.all([
+        supabase.from('invoices').select('id,invoice_number,buyer_ntn,buyer_name,total_amount,status').or(filter).limit(8),
+        supabase.from('drafts').select('id,invoice_number,buyer_ntn,buyer_name,total_amount,status').or(filter).limit(8),
+      ])
+      const merged = [
+        ...(invoices || []).map(r => ({ ...r, kind: 'invoice' })),
+        ...(drafts   || []).map(r => ({ ...r, kind: 'draft', status: r.status || 'auto-saved' })),
+      ].slice(0, 8)
+      setResults(merged)
     }, 200)
     return () => clearTimeout(t)
   }, [local, setQuery])
@@ -59,15 +65,25 @@ const TopBar = () => {
           <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
             {results.map(r => (
               <button
-                key={r.id}
-                onClick={() => { navigate(`/dashboard/invoices/${r.id}`); setOpen(false); setLocal('') }}
-                className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                key={`${r.kind}-${r.id}`}
+                onClick={() => {
+                  // Drafts have no standalone detail page — the Draft list is
+                  // the only place to open/edit one.
+                  navigate(r.kind === 'draft' ? '/dashboard/draft' : `/dashboard/invoices/${r.id}`)
+                  setOpen(false); setLocal('')
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors flex items-center justify-between gap-2"
               >
-                <div>
-                  <p className="text-xs font-semibold text-gray-800">{r.invoice_number}</p>
-                  <p className="text-[11px] text-gray-400">{r.buyer_ntn || '—'} · {r.buyer_name || '—'}</p>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-gray-800 flex items-center gap-1.5">
+                    <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${r.kind === 'draft' ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>
+                      {r.kind === 'draft' ? 'Draft' : 'Invoice'}
+                    </span>
+                    {r.invoice_number}
+                  </p>
+                  <p className="text-[11px] text-gray-400 truncate">{r.buyer_ntn || '—'} · {r.buyer_name || '—'}</p>
                 </div>
-                <span className="text-[10px] font-semibold text-gray-400 uppercase">{r.status}</span>
+                <span className="text-[10px] font-semibold text-gray-400 uppercase shrink-0">{r.status}</span>
               </button>
             ))}
           </div>

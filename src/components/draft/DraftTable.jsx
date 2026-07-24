@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineDocumentDuplicate, HiOutlineCheckCircle } from 'react-icons/hi'
-import { listDrafts, deleteDraft, duplicateDraft, updateDraft } from '../../services/drafts'
+import { listDrafts, deleteDraft, duplicateDraft } from '../../services/drafts'
 import { createInvoice } from '../../services/invoices'
 import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import { useSearch } from '../../lib/SearchContext'
+import { fbrErrorText } from '../../services/fbr'
 import VerifyButton from '../common/VerifyButton'
+import DraftEditModal from './DraftEditModal'
 
 // Map a draft row to the normalized invoice shape the FBR verifier expects.
 // `seller` (resolved from the draft's seller_id) supplies the company's own FBR
@@ -44,6 +46,8 @@ const draftToVerifyInput = (d, seller) => {
     fbr_token:       seller?.fbr_token || '',
     buyer_ntn:      d.buyer_ntn,
     buyer_name:     d.buyer_name,
+    buyer_province: d.payload?.buyer_province || '',
+    buyer_address:  d.payload?.buyer_address || '',
     items,
   }
 }
@@ -70,7 +74,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
       kind: result.status,
       text: result.status === 'verified'
         ? `${name} verified by FBR`
-        : `${name}: ${result.response?.validationResponse?.error || 'FBR rejected the invoice'}`,
+        : `${name}: ${fbrErrorText(result.response) || result.error || 'FBR rejected the invoice'}`,
     })
   }
 
@@ -137,16 +141,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
     load(); onChange?.()
   }
 
-  const startEdit = (r) => setEditing({ ...r })
-  const saveEdit = async () => {
-    await updateDraft(editing.id, {
-      invoice_number: editing.invoice_number,
-      buyer_ntn:      editing.buyer_ntn,
-      buyer_name:     editing.buyer_name,
-      description:    editing.description,
-    })
-    setEditing(null); load(); onChange?.()
-  }
+  const startEdit = (r) => setEditing(r)
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -184,14 +179,10 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-gray-50 last:border-0">
                 <td className={`${tdClass} font-medium text-gray-800`}>
-                  {editing?.id === row.id
-                    ? <input value={editing.invoice_number || ''} onChange={(e) => setEditing(s => ({ ...s, invoice_number: e.target.value }))} className="border rounded px-2 py-1 text-xs w-32" />
-                    : (row.invoice_number || `DFT-${String(row.id).slice(0, 6)}`)}
+                  {row.invoice_number || `DFT-${String(row.id).slice(0, 6)}`}
                 </td>
                 <td className={tdClass}>
-                  {editing?.id === row.id
-                    ? <input value={editing.buyer_ntn || ''} onChange={(e) => setEditing(s => ({ ...s, buyer_ntn: e.target.value }))} className="border rounded px-2 py-1 text-xs w-36" />
-                    : `${row.buyer_ntn || '—'}${row.buyer_name ? ` (${row.buyer_name})` : ''}`}
+                  {`${row.buyer_ntn || '—'}${row.buyer_name ? ` (${row.buyer_name})` : ''}`}
                 </td>
                 <td className={tdClass}>PKR {Number(row.total_amount || 0).toLocaleString()}</td>
                 <td className={tdClass}>
@@ -201,33 +192,24 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
                 </td>
                 <td className={`${tdClass} text-right`}>
                   <div className="flex items-center justify-end gap-1">
-                    {editing?.id === row.id ? (
-                      <>
-                        <button onClick={saveEdit} className="text-xs font-semibold text-green-600 hover:underline px-1">Save</button>
-                        <button onClick={() => setEditing(null)} className="text-xs font-semibold text-gray-500 hover:underline px-1">Cancel</button>
-                      </>
-                    ) : (
-                      <>
-                        <VerifyButton
-                          invoice={draftToVerifyInput(row, sellerFor(row))}
-                          onVerified={(r) => handleRowVerified(row, r)}
-                          label="Verify"
-                          className="flex items-center gap-1 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-lg px-2 py-1 text-[11px] font-semibold transition-colors disabled:opacity-60 mr-1"
-                        />
-                        <button onClick={() => handlePromote(row)} className="p-1 text-gray-400 hover:text-green-600 transition-colors" title="Convert to invoice">
-                          <HiOutlineCheckCircle className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => startEdit(row)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Edit">
-                          <HiOutlinePencil className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDuplicate(row.id)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Duplicate">
-                          <HiOutlineDocumentDuplicate className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDelete(row.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors" title="Delete">
-                          <HiOutlineTrash className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
+                    <VerifyButton
+                      invoice={draftToVerifyInput(row, sellerFor(row))}
+                      onVerified={(r) => handleRowVerified(row, r)}
+                      label="Verify"
+                      className="flex items-center gap-1 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-lg px-2 py-1 text-[11px] font-semibold transition-colors disabled:opacity-60 mr-1"
+                    />
+                    <button onClick={() => handlePromote(row)} className="p-1 text-gray-400 hover:text-green-600 transition-colors" title="Convert to invoice">
+                      <HiOutlineCheckCircle className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => startEdit(row)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Edit">
+                      <HiOutlinePencil className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDuplicate(row.id)} className="p-1 text-gray-400 hover:text-[#0e5f4f] transition-colors" title="Duplicate">
+                      <HiOutlineDocumentDuplicate className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete(row.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                      <HiOutlineTrash className="w-4 h-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -235,6 +217,13 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
           </tbody>
         </table>
       </div>
+
+      <DraftEditModal
+        open={!!editing}
+        draft={editing}
+        onClose={() => setEditing(null)}
+        onSaved={() => { load(); onChange?.() }}
+      />
     </div>
   )
 }
