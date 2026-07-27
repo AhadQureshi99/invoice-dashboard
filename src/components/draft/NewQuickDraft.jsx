@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { HiOutlineEye, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineEye, HiOutlinePlus, HiOutlinePrinter, HiOutlineTrash } from 'react-icons/hi'
 import { createDraft } from '../../services/drafts'
 import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import BrandingAssets from '../common/BrandingAssets'
 import VerifyButton from '../common/VerifyButton'
-import Modal from '../common/Modal'
+import DateInput from '../common/DateInput'
+import InvoiceDocModal from '../common/InvoiceDocModal'
 import HsCodeInput from './HsCodeInput'
 import ProductInput from './ProductInput'
 import { fbrErrorText } from '../../services/fbr'
@@ -48,14 +49,10 @@ const NewQuickDraft = ({ onSaved }) => {
   const [busy, setBusy] = useState(false)
   const [msg,  setMsg]  = useState(null)
   const [showPreview, setShowPreview] = useState(false)
-
-  // Print just the preview: isolate .print-area via body.printing-preview.
-  const handlePrint = () => {
-    document.body.classList.add('printing-preview')
-    const cleanup = () => { document.body.classList.remove('printing-preview'); window.removeEventListener('afterprint', cleanup) }
-    window.addEventListener('afterprint', cleanup)
-    window.print()
-  }
+  // Snapshot of the last FBR verification: { invoice, verification }. Kept so the
+  // verified invoice stays printable even if the form is edited afterwards.
+  const [receipt, setReceipt] = useState(null)
+  const [showReceipt, setShowReceipt] = useState(false)
 
   // Load the user's companies; preselect the default (or first) one.
   useEffect(() => {
@@ -105,7 +102,15 @@ const NewQuickDraft = ({ onSaved }) => {
   }), [form, items, seller])
 
   const handleVerified = async (result) => {
-    if (result.error) { setMsg({ kind: 'err', text: result.error }); return }
+    if (result.error) { setReceipt(null); setMsg({ kind: 'err', text: result.error }); return }
+    setReceipt({
+      invoice: verifyInput,
+      verification: {
+        status:       result.status,
+        fbrInvoiceNo: result.record?.fbr_invoice_no || result.response?.invoiceNumber || null,
+        statusCode:   result.response?.validationResponse?.statusCode || result.record?.fbr_status_code || null,
+      },
+    })
     setMsg({
       kind: result.status === 'verified' ? 'ok' : 'err',
       text: result.status === 'verified'
@@ -210,7 +215,7 @@ const NewQuickDraft = ({ onSaved }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice Date</label>
-          <input type="date" value={form.invoice_date} onChange={set('invoice_date')} className={inputClass} />
+          <DateInput value={form.invoice_date} onChange={set('invoice_date')} className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN</label>
@@ -338,6 +343,19 @@ const NewQuickDraft = ({ onSaved }) => {
         className="w-full flex items-center justify-center gap-1.5 border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-60"
       />
 
+      {/* Once FBR accepts the invoice, it can be printed / saved as PDF with its
+          FBR invoice number on it. */}
+      {receipt?.verification?.status === 'verified' && (
+        <button
+          type="button"
+          onClick={() => setShowReceipt(true)}
+          className="w-full flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl py-2.5 text-sm font-semibold transition-colors"
+        >
+          <HiOutlinePrinter className="w-4 h-4" />
+          Print / Save Verified Invoice
+        </button>
+      )}
+
       <div className="grid grid-cols-2 gap-3 pt-1">
         <button type="button" onClick={() => setShowPreview(true)} className="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
           <HiOutlineEye className="w-4 h-4" />
@@ -348,80 +366,22 @@ const NewQuickDraft = ({ onSaved }) => {
         </button>
       </div>
 
-      <Modal
+      {/* Draft preview — same document that gets printed. */}
+      <InvoiceDocModal
         open={showPreview}
         onClose={() => setShowPreview(false)}
+        invoice={verifyInput}
         title="Invoice Preview"
-        maxWidth="max-w-2xl"
-        footer={
-          <>
-            <button onClick={() => setShowPreview(false)} className="no-print border border-gray-300 rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Close</button>
-            <button onClick={handlePrint} className="no-print bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-4 py-2 text-sm font-semibold">Print / Save PDF</button>
-          </>
-        }
-      >
-        <div className="print-area flex flex-col gap-5 text-gray-800">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-base font-bold">Invoice</p>
-              <p className="text-xs text-gray-500 mt-0.5">ID: {form.invoice_number}</p>
-              <p className="text-xs text-gray-400">Date: {form.invoice_date}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-black text-[#0e5f4f]">PKR {money(totals.total)}</p>
-              <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Total Amount</p>
-            </div>
-          </div>
+      />
 
-          <div className="grid grid-cols-2 gap-6 border-t border-gray-100 pt-4">
-            <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Seller</p>
-              <p className="text-sm font-bold">{seller?.company_name || '—'}</p>
-              <p className="text-xs text-gray-500 mt-1">NTN: {seller?.ntn || '—'}</p>
-              <p className="text-xs text-gray-500">{seller?.address || ''}{seller?.province ? `, ${seller.province}` : ''}</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Buyer</p>
-              <p className="text-sm font-bold">{form.buyer_name || '—'}</p>
-              <p className="text-xs text-gray-500 mt-1">NTN: {form.buyer_ntn || '—'}</p>
-              <p className="text-xs text-gray-500">{form.buyer_address || ''}{form.buyer_province ? `, ${form.buyer_province}` : ''}</p>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-100 pt-4">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left">
-                  <th className="pb-2">Description</th>
-                  <th className="pb-2">HS Code</th>
-                  <th className="pb-2 text-center">Qty</th>
-                  <th className="pb-2 text-right">Unit Price</th>
-                  <th className="pb-2 text-right">Line Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((it, idx) => {
-                  const lt = lineTotals(it)
-                  return (
-                    <tr key={idx} className="border-b border-gray-50 text-xs text-gray-700">
-                      <td className="py-2 pr-3">{it.description || '—'}</td>
-                      <td className="py-2 pr-3">{it.hs_code || '—'}</td>
-                      <td className="py-2 text-center">{it.quantity}</td>
-                      <td className="py-2 text-right">{money(it.unit_price)}</td>
-                      <td className="py-2 text-right font-semibold">{money(lt.total)}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            <div className="mt-4 flex flex-col items-end gap-1.5">
-              <div className="flex items-center gap-12"><span className="text-xs text-gray-500">Subtotal</span><span className="text-xs font-semibold w-32 text-right">{money(totals.sub)}</span></div>
-              <div className="flex items-center gap-12"><span className="text-xs text-gray-500">GST (18%)</span><span className="text-xs font-semibold w-32 text-right">{money(totals.gst)}</span></div>
-              <div className="flex items-center gap-12 border-t border-gray-200 pt-2 mt-1"><span className="text-sm font-bold">Total</span><span className="text-sm font-black text-[#0e5f4f] w-32 text-right">PKR {money(totals.total)}</span></div>
-            </div>
-          </div>
-        </div>
-      </Modal>
+      {/* Verified invoice: printed from the snapshot taken when FBR accepted it. */}
+      <InvoiceDocModal
+        open={showReceipt}
+        onClose={() => setShowReceipt(false)}
+        invoice={receipt?.invoice}
+        verification={receipt?.verification}
+        title="Verified Invoice"
+      />
     </div>
   )
 }

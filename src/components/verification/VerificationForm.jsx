@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { HiInformationCircle, HiOutlineCloudUpload, HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
+import { HiInformationCircle, HiOutlineCloudUpload, HiOutlinePlus, HiOutlinePrinter, HiOutlineTrash } from 'react-icons/hi'
 import { verifyAndRecord } from '../../services/fbr'
 import { listSellers } from '../../services/sellers'
 import { logActivity } from '../../services/activity'
 import { parseCSV } from '../../lib/export'
+import DateInput from '../common/DateInput'
+import InvoiceDocModal from '../common/InvoiceDocModal'
 
 const initial = {
   invoice_number: '',
@@ -38,13 +40,18 @@ const emptyItem = () => ({
 const cellClass = `w-full border border-gray-200 rounded-md px-2.5 py-1.5 text-sm placeholder:text-gray-300 text-gray-700
   focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors`
 
+const fieldClass = 'w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder:text-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors'
+
 const Field = ({ label, value, onChange, type = 'text', placeholder = '' }) => (
   <div>
     <label className="block text-xs font-semibold text-gray-700 mb-1.5">{label}</label>
-    <input
-      type={type} value={value} onChange={onChange} placeholder={placeholder}
-      className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm placeholder:text-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f] transition-colors"
-    />
+    {/* Dates go through DateInput so they read DD/MM/YYYY instead of the
+        browser-locale format of a native date input. */}
+    {type === 'date' ? (
+      <DateInput value={value} onChange={onChange} className={fieldClass} />
+    ) : (
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={fieldClass} />
+    )}
   </div>
 )
 
@@ -57,6 +64,10 @@ const VerificationForm = ({ onResult }) => {
   const [bulk, setBulk] = useState({ done: 0, total: 0, errors: 0, results: [] })
   const [sellers, setSellers]   = useState([])
   const [sellerId, setSellerId] = useState('')
+  // Snapshot of the last verification: { invoice, verification }. Keeps the
+  // verified invoice printable even if the form is edited afterwards.
+  const [receipt, setReceipt] = useState(null)
+  const [showReceipt, setShowReceipt] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
@@ -91,7 +102,7 @@ const VerificationForm = ({ onResult }) => {
     [items],
   )
 
-  const handleClear = () => { setForm(initial); setItems([emptyItem()]); setMsg(null) }
+  const handleClear = () => { setForm(initial); setItems([emptyItem()]); setMsg(null); setReceipt(null) }
 
   const handleVerify = async () => {
     setMsg(null); setBusy(true)
@@ -108,6 +119,14 @@ const VerificationForm = ({ onResult }) => {
         })),
       }
       const result = await verifyAndRecord(payload)
+      setReceipt({
+        invoice: payload,
+        verification: {
+          status:       result.status,
+          fbrInvoiceNo: result.record?.fbr_invoice_no || result.response?.invoiceNumber || null,
+          statusCode:   result.response?.validationResponse?.statusCode || result.record?.fbr_status_code || null,
+        },
+      })
       await logActivity({
         action:  'Invoice Verification',
         subject: form.invoice_number || 'Manual',
@@ -120,6 +139,7 @@ const VerificationForm = ({ onResult }) => {
         : (result.response?.validationResponse?.error || 'FBR rejected the invoice') })
       onResult?.(result)
     } catch (err) {
+      setReceipt(null)
       setMsg({ kind: 'invalid', text: err.message })
     } finally {
       setBusy(false)
@@ -311,6 +331,17 @@ const VerificationForm = ({ onResult }) => {
               Data is cross-referenced with FBR central Database
             </div>
             <div className="flex items-center gap-3">
+              {/* Once FBR accepts the invoice it can be printed / saved as PDF. */}
+              {receipt?.verification?.status === 'verified' && (
+                <button
+                  type="button"
+                  onClick={() => setShowReceipt(true)}
+                  className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors"
+                >
+                  <HiOutlinePrinter className="w-4 h-4" />
+                  Print / Save Invoice
+                </button>
+              )}
               <button onClick={handleClear} disabled={busy} className="border border-gray-300 rounded-lg px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60">
                 Clear Form
               </button>
@@ -348,6 +379,15 @@ const VerificationForm = ({ onResult }) => {
           )}
         </div>
       )}
+
+      {/* Verified invoice: printed from the snapshot taken when FBR accepted it. */}
+      <InvoiceDocModal
+        open={showReceipt}
+        onClose={() => setShowReceipt(false)}
+        invoice={receipt?.invoice}
+        verification={receipt?.verification}
+        title="Verified Invoice"
+      />
     </div>
   )
 }

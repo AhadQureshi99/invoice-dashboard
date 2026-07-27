@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi'
 import Modal from '../common/Modal'
+import DateInput from '../common/DateInput'
 import HsCodeInput from './HsCodeInput'
 import ProductInput from './ProductInput'
 import { updateDraft } from '../../services/drafts'
@@ -163,7 +164,7 @@ const DraftEditModal = ({ open, draft, onClose, onSaved }) => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Invoice Date</label>
-            <input type="date" value={form.invoice_date || ''} onChange={set('invoice_date')} className={inputClass} />
+            <DateInput value={form.invoice_date || ''} onChange={set('invoice_date')} className={inputClass} />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Buyer NTN / CNIC</label>
