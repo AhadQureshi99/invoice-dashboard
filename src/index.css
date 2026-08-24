@@ -29,7 +29,13 @@
    - When printing a preview, body.printing-preview isolates .print-area so only
      the invoice itself is rendered. */
 @media print {
+  @page { size: A4; margin: 14mm 12mm; }
+
   .no-print { display: none !important; }
+
+  /* Repeat the item-table header on every printed page instead of only the first. */
+  .print-area thead { display: table-header-group; }
+  .print-area tr { break-inside: avoid; page-break-inside: avoid; }
 
   /* The dashboard shell uses h-screen + overflow-hidden/overflow-y-auto, which
      clips the printout to a single viewport — cutting off the bottom of the

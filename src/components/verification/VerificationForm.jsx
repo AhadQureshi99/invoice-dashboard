@@ -281,16 +281,16 @@ const VerificationForm = ({ onResult }) => {
                         <input value={it.hs_code} onChange={setItem(idx, 'hs_code')} placeholder="0000.0000" className={cellClass} />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" value={it.quantity} onChange={setItem(idx, 'quantity')} className={cellClass} />
+                        <input type="number" step="any" min="0" value={it.quantity} onChange={setItem(idx, 'quantity')} className={cellClass} />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" value={it.value_excl_st} onChange={setItem(idx, 'value_excl_st')} className={cellClass} />
+                        <input type="number" step="any" min="0" value={it.value_excl_st} onChange={setItem(idx, 'value_excl_st')} className={cellClass} />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" value={it.sales_tax} onChange={setItem(idx, 'sales_tax')} className={cellClass} />
+                        <input type="number" step="any" min="0" value={it.sales_tax} onChange={setItem(idx, 'sales_tax')} className={cellClass} />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" value={it.total} onChange={setItem(idx, 'total')} className={cellClass} />
+                        <input type="number" step="any" min="0" value={it.total} onChange={setItem(idx, 'total')} className={cellClass} />
                       </td>
                       <td className="px-3 py-2">
                         <button

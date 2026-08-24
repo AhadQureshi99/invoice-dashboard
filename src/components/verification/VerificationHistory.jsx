@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { HiOutlineX, HiOutlineClipboardCopy } from 'react-icons/hi'
+import { HiOutlineX, HiOutlineClipboardCopy, HiOutlineDownload } from 'react-icons/hi'
 import { listVerifications } from '../../services/verifications'
+import InvoiceDocModal from '../common/InvoiceDocModal'
 
 const badgeClass = {
   verified:  'bg-green-50  text-green-600',
@@ -82,7 +83,7 @@ const LogModal = ({ row, onClose, fmtDate }) => {
             <Detail label="Date & Time"    value={fmtDate(row.created_at)} />
             <Detail label="Seller NTN"     value={row.seller_ntn} mono />
             <Detail label="Buyer NTN"      value={row.buyer_ntn || 'Walk-in'} mono />
-            <Detail label="Amount PKR"     value={Number(row.amount || 0).toLocaleString()} />
+            <Detail label="Amount PKR"     value={Number(row.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} />
             <Detail label="FBR Invoice No" value={row.fbr_invoice_no} mono />
             <Detail label="Response Time"  value={row.response_time_ms ? `${(row.response_time_ms / 1000).toFixed(1)}s` : '—'} />
           </div>
@@ -124,12 +125,41 @@ const tdClass = 'text-sm text-gray-600 py-3.5'
 
 const PAGE_SIZE = 10
 
+// The stored request_payload is the FBR-format payload (buildPayload's output,
+// camelCase FBR field names) — remap it into the snake_case invoice shape
+// InvoiceDocModal expects so a history row can be printed/downloaded.
+const toInvoiceDoc = (row) => {
+  const req   = row.request_payload || {}
+  const items = (req.items || []).map(it => ({
+    description:   it.productDescription,
+    hs_code:       it.hsCode,
+    quantity:      it.quantity,
+    value_excl_st: it.valueSalesExcludingST,
+    sales_tax:     it.salesTaxApplicable,
+    total:         it.totalValues,
+  }))
+  return {
+    invoice_number:  row.invoice_number,
+    invoice_date:    row.invoice_date,
+    seller_ntn:      req.sellerNTNCNIC || row.seller_ntn,
+    seller_name:     req.sellerBusinessName,
+    seller_province: req.sellerProvince,
+    seller_address:  req.sellerAddress,
+    buyer_ntn:       req.buyerNTNCNIC || row.buyer_ntn,
+    buyer_name:      req.buyerBusinessName,
+    buyer_province:  req.buyerProvince,
+    buyer_address:   req.buyerAddress,
+    items: items.length ? items : [{ description: 'Invoice Total', quantity: 1, value_excl_st: row.amount, sales_tax: 0, total: row.amount }],
+  }
+}
+
 const VerificationHistory = ({ refreshKey = 0 }) => {
   const [rows,   setRows]   = useState([])
   const [count,  setCount]  = useState(0)
   const [page,   setPage]   = useState(1)
   const [loading,setLoading]= useState(true)
   const [selected, setSelected] = useState(null)
+  const [printRow, setPrintRow] = useState(null)
 
   useEffect(() => {
     setLoading(true)
@@ -194,17 +224,25 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
                 <td className={`${tdClass} text-gray-500`}>{fmtDate(row.created_at)}</td>
                 <td className={`${tdClass} text-gray-800 font-medium`}>{row.invoice_number || '—'}</td>
                 <td className={tdClass}>{row.seller_ntn || '—'}</td>
-                <td className={tdClass}>{Number(row.amount || 0).toLocaleString()}</td>
+                <td className={tdClass}>{Number(row.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td className={tdClass}>
                   <StatusBadge status={row.status} />
                 </td>
                 <td className={tdClass}>
-                  <button
-                    onClick={() => setSelected(row)}
-                    className="text-xs font-medium text-gray-500 hover:text-[#0e5f4f] transition-colors"
-                  >
-                    View Log
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setSelected(row)}
+                      className="text-xs font-medium text-gray-500 hover:text-[#0e5f4f] transition-colors"
+                    >
+                      View Log
+                    </button>
+                    <button
+                      onClick={() => setPrintRow(row)}
+                      className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-[#0e5f4f] transition-colors"
+                    >
+                      <HiOutlineDownload className="w-3.5 h-3.5" /> Invoice
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -230,6 +268,14 @@ const VerificationHistory = ({ refreshKey = 0 }) => {
     </div>
 
     {selected && <LogModal row={selected} onClose={() => setSelected(null)} fmtDate={fmtDate} />}
+
+    <InvoiceDocModal
+      open={!!printRow}
+      onClose={() => setPrintRow(null)}
+      invoice={printRow ? toInvoiceDoc(printRow) : null}
+      verification={printRow ? { status: printRow.status, fbrInvoiceNo: printRow.fbr_invoice_no, statusCode: printRow.fbr_status_code } : null}
+      title="Invoice"
+    />
     </>
   )
 }
