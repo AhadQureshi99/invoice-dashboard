@@ -184,7 +184,7 @@ const DraftTable = ({ refreshKey = 0, statusFilter = '', onChange }) => {
                 <td className={tdClass}>
                   {`${row.buyer_ntn || '—'}${row.buyer_name ? ` (${row.buyer_name})` : ''}`}
                 </td>
-                <td className={tdClass}>PKR {Number(row.total_amount || 0).toLocaleString()}</td>
+                <td className={tdClass}>PKR {Number(row.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td className={tdClass}>
                   <span className="bg-green-50 text-green-500 text-[11px] font-semibold px-3 py-0.5 rounded-full border border-green-100">
                     {String(row.status || 'auto-saved').toUpperCase()}

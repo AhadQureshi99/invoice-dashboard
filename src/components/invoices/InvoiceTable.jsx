@@ -60,7 +60,7 @@ const InvoiceTable = () => {
                   <p className="text-xs text-gray-400">{row.buyer_name}</p>
                 </td>
                 <td className={tdClass}>{row.invoice_type || 'Sale Invoice'}</td>
-                <td className={`${tdClass} font-medium text-gray-800`}>{Number(row.total_amount || 0).toLocaleString()}</td>
+                <td className={`${tdClass} font-medium text-gray-800`}>{Number(row.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td className={tdClass}>
                   <span className={`text-xs font-semibold ${badgeClass[row.status] || badgeClass.draft}`}>
                     {labelFor(row.status)}

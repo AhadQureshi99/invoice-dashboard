@@ -213,7 +213,7 @@ const DraftEditModal = ({ open, draft, onClose, onSaved }) => {
                       onPick={(p) => setItemFields(idx, {
                         description: p.description,
                         hs_code: p.hs_code || it.hs_code,
-                        unit_price: p.unit_price || it.unit_price,
+                        unit_price: p.unit_price != null ? p.unit_price : it.unit_price,
                       })}
                       className={`${inputClass} bg-white`}
                     />
@@ -235,11 +235,11 @@ const DraftEditModal = ({ open, draft, onClose, onSaved }) => {
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-gray-400 mb-1">QTY</label>
-                    <input type="number" min="0" value={it.quantity} onChange={setItem(idx, 'quantity')} className={`${inputClass} bg-white`} />
+                    <input type="number" min="0" step="any" value={it.quantity} onChange={setItem(idx, 'quantity')} className={`${inputClass} bg-white`} />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-gray-400 mb-1">Unit Price</label>
-                    <input type="number" min="0" value={it.unit_price} onChange={setItem(idx, 'unit_price')} className={`${inputClass} bg-white`} />
+                    <input type="number" min="0" step="any" value={it.unit_price} onChange={setItem(idx, 'unit_price')} className={`${inputClass} bg-white`} />
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-gray-400 mb-1">Line Total</label>

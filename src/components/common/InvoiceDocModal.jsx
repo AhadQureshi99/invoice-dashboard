@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import Modal from './Modal'
 import { isoToDMY } from './DateInput'
 
@@ -24,6 +25,9 @@ const toRow = (it) => {
 }
 
 const InvoiceDocModal = ({ open, onClose, invoice, verification = null, title = 'Invoice Preview', onPrint }) => {
+  const docRef = useRef(null)
+  const [downloading, setDownloading] = useState(false)
+
   if (!open || !invoice) return null
 
   const rows   = (invoice.items || []).map(toRow)
@@ -39,6 +43,44 @@ const InvoiceDocModal = ({ open, onClose, invoice, verification = null, title = 
     window.print()
   })
 
+  // Renders the invoice document to a canvas and drops it straight into an
+  // A4 PDF — a real file download, independent of the browser's print dialog
+  // (and its unremovable URL/date header-footer chrome).
+  const handleDownload = async () => {
+    if (!docRef.current || downloading) return
+    setDownloading(true)
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')])
+      const canvas = await html2canvas(docRef.current, { scale: 2, backgroundColor: '#ffffff' })
+      const imgData = canvas.toDataURL('image/png')
+
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
+      const pageW = pdf.internal.pageSize.getWidth()
+      const pageH = pdf.internal.pageSize.getHeight()
+      const margin = 10
+      const usableW = pageW - margin * 2
+      const imgH = (canvas.height * usableW) / canvas.width
+
+      let remaining = imgH
+      let position = margin
+      pdf.addImage(imgData, 'PNG', margin, position, usableW, imgH)
+      remaining -= (pageH - margin * 2)
+
+      // Longer invoices span multiple pages: shift the same tall image up by
+      // one page-height each time so each page reveals the next slice.
+      while (remaining > 0) {
+        position = margin - (imgH - remaining)
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', margin, position, usableW, imgH)
+        remaining -= (pageH - margin * 2)
+      }
+
+      pdf.save(`${invoice.invoice_number || 'invoice'}.pdf`)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const verified = verification?.status === 'verified'
 
   return (
@@ -50,11 +92,14 @@ const InvoiceDocModal = ({ open, onClose, invoice, verification = null, title = 
       footer={
         <>
           <button onClick={onClose} className="no-print border border-gray-300 rounded-lg px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Close</button>
-          <button onClick={handlePrint} className="no-print bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-4 py-2 text-sm font-semibold">Print / Save PDF</button>
+          <button onClick={handleDownload} disabled={downloading} className="no-print border border-[#0e5f4f] text-[#0e5f4f] hover:bg-[#0e5f4f]/5 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-60">
+            {downloading ? 'Preparing…' : 'Save PDF'}
+          </button>
+          <button onClick={handlePrint} className="no-print bg-[#0e5f4f] hover:bg-[#083f33] text-white rounded-lg px-4 py-2 text-sm font-semibold">Print</button>
         </>
       }
     >
-      <div className="print-area flex flex-col gap-5 text-gray-800">
+      <div ref={docRef} className="print-area flex flex-col gap-5 text-gray-800 bg-white">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-base font-bold">Invoice</p>
@@ -121,7 +166,7 @@ const InvoiceDocModal = ({ open, onClose, invoice, verification = null, title = 
               ))}
             </tbody>
           </table>
-          <div className="mt-4 flex flex-col items-end gap-1.5">
+          <div className="print-keep-together mt-4 flex flex-col items-end gap-1.5">
             <div className="flex items-center gap-12"><span className="text-xs text-gray-500">Subtotal</span><span className="text-xs font-semibold w-32 text-right">{money(totals.sub)}</span></div>
             <div className="flex items-center gap-12"><span className="text-xs text-gray-500">Sales Tax</span><span className="text-xs font-semibold w-32 text-right">{money(totals.tax)}</span></div>
             <div className="flex items-center gap-12 border-t border-gray-200 pt-2 mt-1"><span className="text-sm font-bold">Total</span><span className="text-sm font-black text-[#0e5f4f] w-32 text-right">PKR {money(totals.total)}</span></div>
