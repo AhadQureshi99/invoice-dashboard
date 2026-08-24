@@ -153,7 +153,7 @@ const ProductCatalog = () => {
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-gray-500 mb-1">Unit Price</label>
-              <input type="number" min="0" value={form.unit_price} onChange={set('unit_price')} placeholder="0" className={inputClass} />
+              <input type="number" min="0" step="any" value={form.unit_price} onChange={set('unit_price')} placeholder="0.00" className={inputClass} />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-gray-500 mb-1">UoM (optional)</label>
@@ -184,7 +184,7 @@ const ProductCatalog = () => {
                 <tr key={p.id} className="text-sm text-gray-600">
                   <td className="py-2.5 font-medium text-gray-800">{p.description}</td>
                   <td className="py-2.5 text-[#0e5f4f] font-mono text-xs">{p.hs_code || '—'}</td>
-                  <td className="py-2.5 text-right">{Number(p.unit_price || 0).toLocaleString()}</td>
+                  <td className="py-2.5 text-right">{Number(p.unit_price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                   <td className="py-2.5">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => startEdit(p)} className="p-1 text-gray-400 hover:text-[#0e5f4f]" title="Edit"><HiOutlinePencil className="w-4 h-4" /></button>
