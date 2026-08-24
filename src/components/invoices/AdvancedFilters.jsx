@@ -52,8 +52,8 @@ const AdvancedFilters = ({ onApply }) => {
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-gray-600">Amount Range</label>
           <div className="flex items-center gap-2">
-            <input type="number" value={f.min} onChange={set('min')} placeholder="Min" className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 w-24 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f]" />
-            <input type="number" value={f.max} onChange={set('max')} placeholder="Max" className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 w-24 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f]" />
+            <input type="number" step="any" min="0" value={f.min} onChange={set('min')} placeholder="Min" className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 w-24 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f]" />
+            <input type="number" step="any" min="0" value={f.max} onChange={set('max')} placeholder="Max" className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 w-24 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0e5f4f]/20 focus:border-[#0e5f4f]" />
           </div>
         </div>
 

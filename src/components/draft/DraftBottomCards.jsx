@@ -23,7 +23,7 @@ const ComplianceDecor = () => (
   </svg>
 )
 
-const fmt = (v) => v >= 1e6 ? `PKR ${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `PKR ${(v / 1e3).toFixed(1)}K` : `PKR ${Math.round(v)}`
+const fmt = (v) => v >= 1e6 ? `PKR ${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `PKR ${(v / 1e3).toFixed(1)}K` : `PKR ${Number(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 const DraftBottomCards = ({ refreshKey = 0 }) => {
   const [stats, setStats] = useState({ pipeline: 0, pendingTax: 0, total: 0, compliance: 100 })
