@@ -395,6 +395,8 @@ export async function verifyAndRecord(input) {
 // Each scenario's config was verified to return statusCode "00" against FBR
 // sandbox. Non-18% rates require the matching SRO schedule + item serial
 // (FBR errorCode 0077/0078); 3rd-schedule sales need a retail price.
+// FED-in-ST-mode goods only accept a few petroleum HS codes (2710.1240/1250/1942,
+// UoM Liter/KG) and FBR checks tax = 18% × (value + Rs.80/L) + Rs.80/L (0131).
 export const SANDBOX_SCENARIOS = [
   { id: 'SN001', name: 'Goods at standard rate — to registered buyers',   saleType: 'Goods at standard rate (default)', rate: '18%',   buyerRegistered: true  },
   { id: 'SN002', name: 'Goods at standard rate — to unregistered buyers', saleType: 'Goods at standard rate (default)', rate: '18%',   buyerRegistered: false },
@@ -403,7 +405,7 @@ export const SANDBOX_SCENARIOS = [
   { id: 'SN007', name: 'Zero rated sale',                                 saleType: 'Goods at zero-rate',               rate: '0%',    buyerRegistered: true,  sroScheduleNo: '327(I)/2008',             sroItemSerialNo: 1  },
   { id: 'SN008', name: 'Sale of 3rd schedule goods',                      saleType: '3rd Schedule Goods',               rate: '18%',   buyerRegistered: true,  retailPrice: true },
   { id: 'SN016', name: 'Processing / conversion of goods',                saleType: 'Processing/Conversion of Goods',   rate: '18%',   buyerRegistered: true  },
-  { id: 'SN017', name: 'Sale of goods where FED is charged in ST mode',   saleType: 'Goods (FED in ST Mode)',           rate: '17%',   buyerRegistered: true  },
+  { id: 'SN017', name: 'Sale of goods where FED is charged in ST mode',   saleType: 'Goods (FED in ST Mode)',           rate: '18% and Rs. 80 per Liter', buyerRegistered: true, hsCode: '2710.1240', uoM: 'Liter', fedPerLiter: 80 },
   { id: 'SN024', name: 'Goods sold under SRO 297(I)/2023',                saleType: 'Goods as per SRO.297(|)/2023',     rate: '25%',   buyerRegistered: true,  sroScheduleNo: '297(I)/2023-Table-II',    sroItemSerialNo: 1  },
   { id: 'SN026', name: 'Sale to end consumer by retailers — standard',    saleType: 'Goods at standard rate (default)', rate: '18%',   buyerRegistered: false },
   { id: 'SN027', name: 'Sale to end consumer by retailers — 3rd schedule',saleType: '3rd Schedule Goods',               rate: '18%',   buyerRegistered: false, retailPrice: true },
@@ -420,7 +422,8 @@ export async function runSandboxScenario(scenario, seller) {
   const sellerNTN  = normalizeNTN(seller?.ntn) || SELLER_NTN
   const valueExcl  = 1000
   const pct        = parseFloat(scenario.rate) || 0        // "Exempt"/"0%" → 0
-  const salesTax   = Math.round(valueExcl * pct) / 100
+  const fed        = scenario.fedPerLiter || 0   // per-litre FED/levy; quantity is 1 litre
+  const salesTax   = Math.round((valueExcl + fed) * pct + fed * 100) / 100
   const total      = Math.round((valueExcl + salesTax) * 100) / 100
   const registered = !!scenario.buyerRegistered
 
@@ -439,10 +442,10 @@ export async function runSandboxScenario(scenario, seller) {
     invoiceRefNo:          '',
     scenarioId:            scenario.id,
     items: [{
-      hsCode:                          '0101.2100',
+      hsCode:                          scenario.hsCode || '0101.2100',
       productDescription:              scenario.name,
       rate:                            scenario.rate,
-      uoM:                             'Numbers, pieces, units',
+      uoM:                             scenario.uoM || 'Numbers, pieces, units',
       quantity:                        1,
       totalValues:                     total,
       valueSalesExcludingST:           valueExcl,
